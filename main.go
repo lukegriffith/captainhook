@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 )
 
 
@@ -15,7 +17,16 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Unable to get body from")
 	}
 
-	log.Printf("%s", b)
+
+	body := fmt.Sprintf("%s", b)
+
+	decodedBody, err := url.QueryUnescape(body)
+
+	if err != nil {
+		log.Fatal("Unable to URL decode body")
+	}
+
+	log.Print(decodedBody)
 
 	w.Header().Set("Server", "A Go Web Server")
 	w.WriteHeader(200)
