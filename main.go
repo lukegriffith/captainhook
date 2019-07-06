@@ -8,7 +8,7 @@ import (
 	"net/url"
 )
 
-
+// Lukes Comment
 func handler(w http.ResponseWriter, r *http.Request) {
 
 	b, err := ioutil.ReadAll(r.Body)
@@ -25,6 +25,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal("Unable to URL decode body")
 	}
+
+	log.Print(r)
 
 	log.Print(decodedBody)
 
