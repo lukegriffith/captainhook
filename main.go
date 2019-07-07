@@ -8,6 +8,10 @@ import (
 	"net/url"
 )
 
+func parse(string b) {
+  fmt.Println("test")
+}
+
 func handler(w http.ResponseWriter, r *http.Request) {
 
 	b, err := ioutil.ReadAll(r.Body)
@@ -25,6 +29,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Unable to URL decode body")
 	}
 
+
+	parse(body)
 	log.Print(r)
 
 	log.Print(decodedBody)
