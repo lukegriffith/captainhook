@@ -4,6 +4,6 @@ import (
   "fmt"
 )
 
-func parse() {
-  fmt.Println("test")
+func parse(body string) {
+  fmt.Println(body)
 }

@@ -1,47 +1,57 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
-	"log"
 	"net/http"
-	"net/url"
+  "os"
+  "os/signal"
+  "syscall"
+  "log"
+  "context"
+	"time"
 )
 
-func parse(string b) {
-  fmt.Println("test")
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-
-	b, err := ioutil.ReadAll(r.Body)
-
-	if err != nil {
-		log.Fatal("Unable to get body from")
-	}
-
-
-	body := fmt.Sprintf("%s", b)
-
-	decodedBody, err := url.QueryUnescape(body)
-
-	if err != nil {
-		log.Fatal("Unable to URL decode body")
-	}
-
-
-	parse(body)
-	log.Print(r)
-
-	log.Print(decodedBody)
-
-	w.Header().Set("Server", "A Go Web Server")
-	w.WriteHeader(200)
-}
 
 func main() {
 
-	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":8081", nil))
+  alive := true
 
+  app := New()
+
+	server := &http.Server{
+		Addr:           ":8081",
+		Handler:        app,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+	}
+
+
+
+	go server.ListenAndServe()
+
+  c := make(chan os.Signal, 1)
+  signal.Notify(c, os.Interrupt)
+
+  for alive {
+    s := <-c
+    alive = ! interrupt(s)
+    server.Shutdown(context.Background())
+  }
+
+}
+
+
+func interrupt(sig os.Signal) bool {
+
+	die := false
+
+	switch sig {
+    case syscall.SIGINT:
+      log.Print("Interrupt recieved, starting graceful shutdown.")
+			die = true
+
+	  default:
+			log.Print("Unrecognized signal recieved. Ignoring")
+	}
+
+	return die
 }

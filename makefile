@@ -1,16 +1,15 @@
 .PHONY: default
-default: run
+default: test build
 
+
+.PHONY: build
+build: 
+	go build .
 
 .PHONY: test
 test: 
-	go build . 
 	go test ./...
 
 
-*.go:
-	go test .
-	go run main.go
 
-run:
-	go run main.go
+
