@@ -1,9 +1,9 @@
 package main
 
 import (
-  "fmt"
+	"fmt"
 )
 
 func parse(body string) {
-  fmt.Println(body)
+	fmt.Println(body)
 }

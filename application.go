@@ -1,37 +1,33 @@
 package main
 
 import (
-  "net/http"
-  "log"
-	"net/url"
+	"fmt"
 	"io/ioutil"
-  "os"
-  "fmt"
+	"log"
+	"net/http"
+	"net/url"
+	"os"
 )
-
 
 func New() http.Handler {
 
-  mux := http.NewServeMux()
-  log := log.New(os.Stdout, "web ", log.LstdFlags)
-  app := &app{mux, log}
+	mux := http.NewServeMux()
+	log := log.New(os.Stdout, "web ", log.LstdFlags)
+	app := &app{mux, log}
 
+	mux.HandleFunc("/foo", app.foo)
 
-  mux.HandleFunc("/foo", app.foo)
-
-  return app
+	return app
 
 }
 
-
-
 type app struct {
-  mux *http.ServeMux
-  log *log.Logger
+	mux *http.ServeMux
+	log *log.Logger
 }
 
 func (a *app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    a.mux.ServeHTTP(w, r)
+	a.mux.ServeHTTP(w, r)
 }
 
 func (a *app) foo(w http.ResponseWriter, r *http.Request) {
@@ -58,5 +54,3 @@ func (a *app) foo(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Server", "A Go Web Server")
 	w.WriteHeader(200)
 }
-
-
