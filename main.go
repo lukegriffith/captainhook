@@ -2,22 +2,21 @@ package main
 
 import (
 	"context"
+	"github.com/lukemgriffith/captainhook/app"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-  "github.com/lukemgriffith/captainhook/app"
 )
 
 func main() {
 
-
 	app := app.New()
 
 	server := &http.Server{
-		Addr:         ":8081",
-		Handler:      app,
+		Addr:    ":8081",
+		Handler: app,
 	}
 
 	go server.ListenAndServe()
@@ -27,13 +26,13 @@ func main() {
 
 	for {
 		s := <-c
-    log.Print("os signal recieved. processing.")
+		log.Print("os signal recieved. processing.")
 
-    switch s {
-      case syscall.SIGTERM:
-        log.Print("SIGTERM: shutting server down gracefully")
-        server.Shutdown(context.Background())
-        return
-    }
-  }
+		switch s {
+		case syscall.SIGTERM:
+			log.Print("SIGTERM: shutting server down gracefully")
+			server.Shutdown(context.Background())
+			return
+		}
+	}
 }
