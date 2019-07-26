@@ -13,13 +13,11 @@ func New() http.Handler {
 
 	log := log.New(os.Stdout, "app", log.LstdFlags)
 	mux := http.NewServeMux()
-  fs  := http.FileServer(http.Dir("static"))
+	fs := http.FileServer(http.Dir("static"))
 	app := &app{mux, log}
 
-
 	mux.Handle("/", fs)
-  mux.HandleFunc("/webhook/", app.hooks)
-
+	mux.HandleFunc("/webhook/", app.hooks)
 
 	return app
 
@@ -36,7 +34,7 @@ func (a *app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (a *app) hooks(w http.ResponseWriter, r *http.Request) {
 
-  var secret string
+	var secret string
 
 	b, err := ioutil.ReadAll(r.Body)
 
@@ -46,7 +44,7 @@ func (a *app) hooks(w http.ResponseWriter, r *http.Request) {
 
 	body := fmt.Sprintf("%s", b)
 
-  secret = r.Header.Get("secret")
+	secret = r.Header.Get("secret")
 
 	decodedBody, err := url.QueryUnescape(body)
 
@@ -54,7 +52,7 @@ func (a *app) hooks(w http.ResponseWriter, r *http.Request) {
 		a.log.Fatal("Unable to URL decode body")
 	}
 
-  a.log.Print(decodedBody, " ", secret, " ", r.URL)
+	a.log.Print(decodedBody, " ", secret, " ", r.URL)
 
 	w.WriteHeader(204)
 }
