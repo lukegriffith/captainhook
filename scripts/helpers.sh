@@ -1,5 +1,5 @@
 kserve(){ 
-  kill -SIGTERM $(ps -a | grep hooks | awk '{print $1}')
+  kill -SIGTERM $(ps -a | grep hook | awk '{print $1}')
 }
 
 scurl(){
