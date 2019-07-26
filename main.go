@@ -7,47 +7,33 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
+  "github.com/lukemgriffith/captainhook/app"
 )
 
 func main() {
 
-	alive := true
 
-	app := New()
+	app := app.New()
 
 	server := &http.Server{
 		Addr:         ":8081",
 		Handler:      app,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
 	}
 
 	go server.ListenAndServe()
 
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
-	for alive {
+	for {
 		s := <-c
-		alive = !interrupt(s)
-		server.Shutdown(context.Background())
-	}
+    log.Print("os signal recieved. processing.")
 
-}
-
-func interrupt(sig os.Signal) bool {
-
-	die := false
-
-	switch sig {
-	case syscall.SIGINT:
-		log.Print("Interrupt recieved, starting graceful shutdown.")
-		die = true
-
-	default:
-		log.Print("Unrecognized signal recieved. Ignoring")
-	}
-
-	return die
+    switch s {
+      case syscall.SIGTERM:
+        log.Print("SIGTERM: shutting server down gracefully")
+        server.Shutdown(context.Background())
+        return
+    }
+  }
 }
