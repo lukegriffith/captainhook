@@ -4,7 +4,7 @@ default: test build
 
 .PHONY: build
 build: 
-	go build -o ./build/hooks .
+	go build -o ./build/hook .
 
 .PHONY: test
 test: 
