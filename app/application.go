@@ -16,16 +16,16 @@ func New() http.Handler {
 	fs := http.FileServer(http.Dir("static"))
 	app := &app{mux, log}
 
-  log.Println("Starting application.")
+	log.Println("Starting application.")
 
 	mux.Handle("/", fs)
 	mux.HandleFunc("/webhook/", app.hooks)
 
-  end := endpoint{"1", "test", "testsec", nil, "sda"}
+	end := endpoint{"1", "test", "testsec", nil, "sda"}
 
-  endpointRm := app.createRestManager(end)
+	endpointRm := app.createRestManager(end)
 
-  mux.HandleFunc("/endpoint", endpointRm.serve)
+	mux.HandleFunc("/endpoint", endpointRm.serve)
 
 	return app
 
@@ -66,5 +66,5 @@ func (a *app) hooks(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *app) createRestManager(h handler) *restManager {
-  return &restManager{h, a.log}
+	return &restManager{h, a.log}
 }
