@@ -21,11 +21,9 @@ func New() http.Handler {
 	mux.Handle("/", fs)
 	mux.HandleFunc("/webhook/", app.hooks)
 
-	end := endpoint{"1", "test", "testsec", nil, "sda"}
+  ec := NewEndpointController()
 
-	endpointRm := app.createRestManager(end)
-
-	mux.HandleFunc("/endpoint", endpointRm.serve)
+	mux.HandleFunc("/endpoint", ec.Serve)
 
 	return app
 
@@ -65,6 +63,7 @@ func (a *app) hooks(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(204)
 }
 
-func (a *app) createRestManager(h handler) *restManager {
-	return &restManager{h, a.log}
+
+func NewLog(name string) *log.Logger {
+  return log.New(os.Stdout, name, log.LstdFlags)
 }
