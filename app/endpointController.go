@@ -29,10 +29,10 @@ func (c *EndpointController) Serve(w http.ResponseWriter, r *http.Request) {
 // Get recieved a single instance of Endpoint
 func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 
-  ID, err := getID(r.URL)
-  e.log.Println(ID)
+	ID, err := getID(r.URL)
+	e.log.Println(ID)
 
-  end := endpoint{"1", "test", "testsec", nil, "sda"}
+	end := endpoint{"1", "test", "testsec", nil, "sda"}
 	json, err := json.Marshal(end)
 	if err != nil {
 		e.log.Fatal("Unable to convert endpoint to json")
