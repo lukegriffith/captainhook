@@ -7,4 +7,3 @@ type endpoint struct {
 	Rules  []rule `json:"rules"`
 	Source string `json:"source"`
 }
-

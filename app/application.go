@@ -21,9 +21,9 @@ func New() http.Handler {
 	mux.Handle("/", fs)
 	mux.HandleFunc("/webhook/", app.hooks)
 
-  ec := NewEndpointController()
+	ec := NewEndpointController()
 
-	mux.HandleFunc("/endpoint", ec.Serve)
+	mux.HandleFunc("/endpoint/", ec.Serve)
 
 	return app
 
@@ -63,7 +63,6 @@ func (a *app) hooks(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(204)
 }
 
-
 func NewLog(name string) *log.Logger {
-  return log.New(os.Stdout, name, log.LstdFlags)
+	return log.New(os.Stdout, name, log.LstdFlags)
 }
