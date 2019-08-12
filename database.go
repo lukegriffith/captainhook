@@ -1,24 +1,23 @@
 package main
 
 import (
-  "github.com/lukemgriffith/captainhook/server"
-  "fmt"
+	"fmt"
+	"github.com/lukemgriffith/captainhook/server"
 )
 
 func main() {
 
+	db := server.OpenDB("hello")
 
-  db := server.OpenDB("hello")
+	defer db.Close()
 
-  defer db.Close()
+	err := db.Ping()
 
-  err := db.Ping()
+	if err != nil {
+		fmt.Println("unable to access db")
+		return
+	}
 
-  if err != nil {
-    fmt.Println("unable to access db")
-    return
-  }
-
-  fmt.Println("db accessed")
+	fmt.Println("db accessed")
 
 }

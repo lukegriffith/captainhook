@@ -1,8 +1,8 @@
 package server
 
 import (
-  "log"
-  "os"
+	"log"
+	"os"
 )
 
 func NewLog(name string) *log.Logger {

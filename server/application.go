@@ -63,4 +63,3 @@ func (a *AppServer) hook(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(204)
 }
-
