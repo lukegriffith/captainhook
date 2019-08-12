@@ -2,12 +2,12 @@ package app
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
-  "github.com/gorilla/mux"
 )
 
 func New() http.Handler {

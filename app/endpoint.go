@@ -2,11 +2,10 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-  "github.com/gorilla/mux"
 )
-
 
 type Endpoint struct {
 	Id     string   `json:"id"`
@@ -25,12 +24,11 @@ func NewEndpointController() *EndpointController {
 	return &EndpointController{log}
 }
 
-
 // Get recieved a single instance of Endpoint
 func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-  e.log.Println(vars)
+	e.log.Println(vars)
 
 	end := Endpoint{"1", "test", "testsec", nil, nil}
 	json, err := json.Marshal(end)
@@ -42,6 +40,6 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 	w.Write(json)
 }
 
-func (e *EndpointController) Post(w http.ResponseWriter, r *http.Request) {}
-func (e *EndpointController) Patch(w http.ResponseWriter, r *http.Request) {}
+func (e *EndpointController) Post(w http.ResponseWriter, r *http.Request)   {}
+func (e *EndpointController) Patch(w http.ResponseWriter, r *http.Request)  {}
 func (e *EndpointController) Delete(w http.ResponseWriter, r *http.Request) {}
