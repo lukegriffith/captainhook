@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/lukemgriffith/captainhook/app"
+	"github.com/lukemgriffith/captainhook/server"
 	"log"
 	"net/http"
 	"os"
@@ -12,7 +12,7 @@ import (
 
 func main() {
 
-	app := app.New()
+	app := server.New()
 
 	server := &http.Server{
 		Addr:    ":8081",

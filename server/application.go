@@ -1,4 +1,4 @@
-package app
+package server
 
 import (
 	"fmt"
@@ -7,40 +7,39 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 )
 
 func New() http.Handler {
 
-	log := log.New(os.Stdout, "app", log.LstdFlags)
+	log := NewLog("CaptainHook")
 	mux := mux.NewRouter()
 	fs := http.FileServer(http.Dir("static"))
-	app := &app{mux, log}
+	AppServer := &AppServer{mux, log}
 
-	log.Println("Starting application.")
+	log.Println("Starting AppServerlication.")
 
 	mux.Handle("/", fs)
-	mux.HandleFunc("/webhook/{id}", app.hooks)
+	mux.HandleFunc("/webhook/{id}", AppServer.hook)
 
 	ec := NewRestController(NewEndpointController())
 
 	mux.HandleFunc("/endpoint/", ec.ServeHTTP)
 	mux.HandleFunc("/endpoint/{id}", ec.ServeHTTP)
 
-	return app
+	return AppServer
 
 }
 
-type app struct {
+type AppServer struct {
 	mux *mux.Router
 	log *log.Logger
 }
 
-func (a *app) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (a *AppServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.mux.ServeHTTP(w, r)
 }
 
-func (a *app) hooks(w http.ResponseWriter, r *http.Request) {
+func (a *AppServer) hook(w http.ResponseWriter, r *http.Request) {
 
 	var secret string
 
@@ -65,6 +64,3 @@ func (a *app) hooks(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(204)
 }
 
-func NewLog(name string) *log.Logger {
-	return log.New(os.Stdout, name, log.LstdFlags)
-}

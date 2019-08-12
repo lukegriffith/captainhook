@@ -1,4 +1,4 @@
-build/hook
+build/*
 .idea/
 *.swp
 webhookrouter

@@ -1,4 +1,4 @@
-package app
+package server
 
 import (
 	"encoding/json"
@@ -33,7 +33,7 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 	end := Endpoint{"1", "test", "testsec", nil, nil}
 	json, err := json.Marshal(end)
 	if err != nil {
-		e.log.Fatal("Unable to convert endpoint to json")
+		e.log.Fatal(err)
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

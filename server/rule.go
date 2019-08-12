@@ -1,4 +1,4 @@
-package app
+package server
 
 type Rule struct {
 	Id              string `json:"id"`

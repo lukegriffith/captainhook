@@ -1,4 +1,4 @@
-package app
+package server
 
 type Source struct {
 	Id         string `json:"id"`

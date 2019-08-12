@@ -15,5 +15,6 @@ test:
 	go test ./...
 
 
-
-
+.PHONY: dbtest
+dbtest:
+	go -o ./build/dbtest database.go
