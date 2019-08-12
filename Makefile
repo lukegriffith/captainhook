@@ -1,6 +1,10 @@
 .PHONY: default
-default: test build
+default: prereq test build
 
+
+.PHONY: prereq
+prereq:
+	go get . 
 
 .PHONY: build
 build: 

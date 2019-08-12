@@ -1,8 +1,8 @@
 package app
 
-type rule struct {
-	id              string `json:"id"`
-	destination_url string `json:"destination "`
-	template        string `json:"template"`
-	verify_ssl      string `json:"verify_ssl"`
+type Rule struct {
+	Id              string `json:"id"`
+	Destination_url string `json:"destination "`
+	Template        string `json:"template"`
+	Verify_ssl      string `json:"verify_ssl"`
 }

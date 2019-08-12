@@ -7,30 +7,32 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+  "github.com/gorilla/mux"
 )
 
 func New() http.Handler {
 
 	log := log.New(os.Stdout, "app", log.LstdFlags)
-	mux := http.NewServeMux()
+	mux := mux.NewRouter()
 	fs := http.FileServer(http.Dir("static"))
 	app := &app{mux, log}
 
 	log.Println("Starting application.")
 
 	mux.Handle("/", fs)
-	mux.HandleFunc("/webhook/", app.hooks)
+	mux.HandleFunc("/webhook/{id}", app.hooks)
 
-	ec := NewEndpointController()
+	ec := NewRestController(NewEndpointController())
 
-	mux.HandleFunc("/endpoint/", ec.Serve)
+	mux.HandleFunc("/endpoint/", ec.ServeHTTP)
+	mux.HandleFunc("/endpoint/{id}", ec.ServeHTTP)
 
 	return app
 
 }
 
 type app struct {
-	mux *http.ServeMux
+	mux *mux.Router
 	log *log.Logger
 }
 
