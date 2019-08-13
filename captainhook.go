@@ -8,10 +8,10 @@ type Endpoint struct {
 }
 
 type EndpointService interface {
-  Endpoint(name string) (*Endpoint, error)
-  Endpoints() ([]*Endpoint, error)
-  CreateEndpoint() error
-  DeleteEndpoint() error
+	Endpoint(name string) (*Endpoint, error)
+	Endpoints() (*[]Endpoint, error)
+	CreateEndpoint() error
+	DeleteEndpoint() error
 }
 
 type Rule struct {
@@ -26,6 +26,5 @@ type Source struct {
 }
 
 type SourceType struct {
-  Name string `json:"name"`
+	Name string `json:"name"`
 }
-

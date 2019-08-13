@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/lukemgriffith/captainhook/server"
 	"github.com/lukemgriffith/captainhook/configparser"
+	"github.com/lukemgriffith/captainhook/server"
 	"log"
 	"net/http"
 	"os"
@@ -15,11 +15,13 @@ var data = `
 endpoints:
   - name: test
     secret: test
+  - name: myhook
+    secret: supersecret
 `
 
 func main() {
 
-  _, svc := NewConfig(data)
+	_, svc := configparser.NewConfig(data)
 	app := server.New(svc)
 
 	server := &http.Server{

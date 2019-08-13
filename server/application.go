@@ -1,30 +1,30 @@
 package server
 
 import (
-  "github.com/lukemgriffith/captainhook"
+	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/lukemgriffith/captainhook"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
-	"fmt"
-	"log"
 )
 
-func New(es *captainhook.EndpointService) http.Handler {
+func New(es captainhook.EndpointService) http.Handler {
 
-	log := NewLog("CaptainHook")
+	log := NewLog("CaptainHook ")
 	mux := mux.NewRouter()
 	fs := http.FileServer(http.Dir("static"))
 	AppServer := &AppServer{mux, log}
 
-	log.Println("Starting AppServerlication.")
+	log.Println("Starting Application Server.")
 
 	mux.Handle("/", fs)
 	mux.HandleFunc("/webhook/{id}", AppServer.hook)
 
 	ec := NewRestController(NewEndpointController(es))
 
-	mux.HandleFunc("/endpoint/", ec.ServeHTTP)
+	mux.HandleFunc("/endpoint", ec.ServeHTTP)
 	mux.HandleFunc("/endpoint/{name}", ec.ServeHTTP)
 
 	return AppServer

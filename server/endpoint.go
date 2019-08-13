@@ -1,22 +1,20 @@
 package server
 
 import (
-  "github.com/lukemgriffith/captainhook"
-	"github.com/gorilla/mux"
 	"encoding/json"
-	"net/http"
+	"github.com/gorilla/mux"
+	"github.com/lukemgriffith/captainhook"
 	"log"
+	"net/http"
 )
 
-
-
 type EndpointController struct {
-  service *captainhook.EndpointService
-	log *log.Logger
+	service captainhook.EndpointService
+	log     *log.Logger
 }
 
-func NewEndpointController(es *captainhook.EndpointService) *EndpointController {
-	log := NewLog("EndpointController")
+func NewEndpointController(es captainhook.EndpointService) *EndpointController {
+	log := NewLog("EndpointController ")
 	return &EndpointController{es, log}
 }
 
@@ -27,31 +25,42 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-  if name, ok := vars["name"]; ok {
-    obj, err := *e.service.Endpoint(name)
+	if name, ok := vars["name"]; ok {
+		obj, err := e.service.Endpoint(name)
 
-    if err != nil {
-      w.WriteHeader(http.StatusNoContent)
-      return
-    }
+		if err != nil {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
 
-    json, err := json.Marshal(obj)
+		json, err := json.Marshal(obj)
 
-    if err != nil {
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(json)
+	} else {
+
+		obj, err := e.service.Endpoints()
+
+		if err != nil {
       w.WriteHeader(http.StatusInternalServerError)
       return
-    }
+		}
+
+		json, err := json.Marshal(obj)
+    if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 
     w.WriteHeader(http.StatusOK)
     w.Write(json)
-  } else {
-
-    obj, err := *e.service.Endpoints()
-
-    if err != nil {
-
-    }
-  }
+	}
 
 }
 

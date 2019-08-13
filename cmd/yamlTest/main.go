@@ -11,15 +11,10 @@ endpoints:
     secret: test
 `
 
-
-
-
 func main() {
 
+	_, es := configparser.NewConfig(data)
 
-  _, es := configparser.NewConfig(data)
-
-
-  fmt.Println(es.Endpoint("test1"))
+	fmt.Println(es.Endpoint("test1"))
 
 }

@@ -1,17 +1,10 @@
 .PHONY: default
-default: prereq test build
+default: 
+	echo "run make standalone"
 
-
-.PHONY: prereq
-prereq:
-	go get . 
-
-.PHONY: build
-build: 
-	go build -o ./build/hook .
-
-.PHONY: test
-test: 
-	go test ./...
+.PHONY: standalone
+standalone:
+	go get ./build/standalone
+	go build -o ./build/standalone cmd/standalone/
 
 
