@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/lukemgriffith/captainhook/server"
+	"github.com/lukemgriffith/captainhook/configparser"
 	"log"
 	"net/http"
 	"os"
@@ -10,9 +11,16 @@ import (
 	"syscall"
 )
 
+var data = `
+endpoints:
+  - name: test
+    secret: test
+`
+
 func main() {
 
-	app := server.New()
+  _, svc := NewConfig(data)
+	app := server.New(svc)
 
 	server := &http.Server{
 		Addr:    ":8081",
