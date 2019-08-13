@@ -18,7 +18,7 @@ type RestController struct {
 }
 
 func NewRestController(c Controller) RestController {
-	log := NewLog("RestController")
+	log := NewLog("RestController ")
 	return RestController{log, c}
 }
 
