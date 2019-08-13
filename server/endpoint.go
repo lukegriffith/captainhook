@@ -47,19 +47,18 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 		obj, err := e.service.Endpoints()
 
 		if err != nil {
-      w.WriteHeader(http.StatusInternalServerError)
-      return
-		}
-
-		json, err := json.Marshal(obj)
-    if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
+		json, err := json.Marshal(obj)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-    w.WriteHeader(http.StatusOK)
-    w.Write(json)
+		w.WriteHeader(http.StatusOK)
+		w.Write(json)
 	}
 
 }
