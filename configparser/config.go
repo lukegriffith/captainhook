@@ -11,10 +11,8 @@ type Config struct {
 }
 
 func (c *Config) GetEndpoints() {
-  return c.Endpoints
+	return c.Endpoints
 }
-
-
 
 func LoadConfig(data string) (*Config, error) {
 

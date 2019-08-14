@@ -23,10 +23,10 @@ func main() {
 
 	_, svc, err := configparser.NewConfig(data)
 
-  if err != nil {
-    log.Fatal("Unable to load config", err)
-    return
-  }
+	if err != nil {
+		log.Fatal("Unable to load config", err)
+		return
+	}
 
 	app := server.New(svc)
 

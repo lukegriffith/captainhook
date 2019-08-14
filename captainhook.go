@@ -1,10 +1,28 @@
 package captainhook
 
+import "errors"
+
 type Endpoint struct {
 	Name   string   `json:"name"`
 	Secret string   `json:"secret"`
 	Rules  []Rule   `json:"rules"`
-	Source []Source `json:"sources"`
+	Sources []Source `json:"sources"`
+}
+
+func (e *Endpoint) GetRules() *[]Rule, error {
+
+  if e.Rules == nil {
+    return nil, erorrs.New("Endpoint has no associated rules.")
+  }
+  return e.Rules, nil
+}
+
+func (e *Endpoint) GetSources() *[]Source, error {
+
+  if e.Sources == nil {
+    return nil, erorrs.New("Endpoint has no associated sources.")
+  }
+  return e.Sources, nil
 }
 
 type EndpointService interface {
