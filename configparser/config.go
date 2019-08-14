@@ -7,8 +7,14 @@ import (
 )
 
 type Config struct {
-	Endpoints []captainhook.Endpoint
+	endpoints []captainhook.Endpoint
 }
+
+func (c *Config) GetEndpoints() {
+  return c.Endpoints
+}
+
+
 
 func LoadConfig(data string) (*Config, error) {
 
@@ -22,12 +28,12 @@ func LoadConfig(data string) (*Config, error) {
 	return &c, nil
 }
 
-func NewConfig(data string) (*Config, *EndpointService) {
+func NewConfig(data string) (*Config, *EndpointService, error) {
 
 	c, err := LoadConfig(data)
 
 	if err != nil {
-		return nil, nil
+		return nil, nil, err
 	}
 
 	return c, &EndpointService{c}

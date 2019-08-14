@@ -11,11 +11,11 @@ type EndpointService struct {
 
 func (e *EndpointService) Endpoint(name string) (*captainhook.Endpoint, error) {
 
-	if len(e.Config.Endpoints) == 0 {
+	if len(e.Config.GetEndpoints()) == 0 {
 		return nil, errors.New("No endpoints configured")
 	}
 
-	for _, endpoint := range e.Config.Endpoints {
+	for _, endpoint := range e.Config.GetEndpoints() {
 		if endpoint.Name == name {
 			return &endpoint, nil
 		}
