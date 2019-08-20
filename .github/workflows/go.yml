@@ -26,6 +26,6 @@ jobs:
 
     - name: Build
       run: | 
-        git config --global url.git@github.com:.insteadOf https://github.com/
-        echo $ssh_priv_key > ~/.ssh/id_rsa
+        mkdir -p ~/go/src/github.com/lukemgriffith/captainhook
+        cp -R ** ~/go/src/github.com/lukemgriffith/captainhook
         go build -v cmd/standalone
