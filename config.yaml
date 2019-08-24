@@ -1,0 +1,5 @@
+endpoints:
+  - name: test
+    secret: test
+  - name: myhook
+    secret: supersecret
