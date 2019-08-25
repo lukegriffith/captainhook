@@ -52,14 +52,7 @@ func (c *Config) reload(path string) {
 
 	switch mode := finfo.Mode(); {
 	case mode.IsDir():
-		files, err := ioutil.ReadDir(path)
-		if err != nil {
-			log.Fatal("Unable to read directory", path)
-		}
-
-		for _, f := range files {
-			c.reload(f.Name())
-		}
+		log.Fatal("Unable to load configuration from directory.")
 	case mode.IsRegular():
 		log.Println("2")
 		file, err := os.Open(path)
