@@ -1,0 +1,10 @@
+endpoints:
+  - name: test
+    secret: test
+    rules:
+      - destination: test
+        template: |
+          my template
+        verify_ssl: true
+  - name: hooks
+    secret: supersecret

@@ -11,22 +11,11 @@ import (
 	"syscall"
 )
 
-var data = `
-endpoints:
-  - name: test
-    secret: test
-  - name: myhook
-    secret: supersecret
-`
+var configpath string = "config.yaml"
 
 func main() {
 
-	_, svc, err := configparser.NewConfig(data)
-
-	if err != nil {
-		log.Fatal("Unable to load config", err)
-		return
-	}
+	config, svc := configparser.NewConfig(configpath)
 
 	app := server.New(svc)
 
@@ -38,7 +27,8 @@ func main() {
 	go server.ListenAndServe()
 
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGUSR1,
+		syscall.SIGUSR2)
 
 	for {
 		s := <-c
@@ -46,9 +36,17 @@ func main() {
 
 		switch s {
 		case syscall.SIGTERM:
-			log.Print("SIGTERM: shutting server down gracefully")
+			log.Print("SIGTERM: shutting server down gracefully.")
 			server.Shutdown(context.Background())
 			return
+
+		case syscall.SIGUSR1:
+			log.Print("SIGUSR1: reloading configuration.")
+			config.Reload()
+
+		case syscall.SIGUSR2:
+			log.Print("SIGUSR2: Dump config.")
+			config.Dump()
 		}
 	}
 }

@@ -1,38 +1,116 @@
 package configparser
 
 import (
+	"bufio"
 	"errors"
 	"github.com/lukemgriffith/captainhook"
 	"gopkg.in/yaml.v2"
+	"io/ioutil"
+	"log"
+	"os"
 )
 
 type Config struct {
-	endpoints []captainhook.Endpoint
+	Endpoints *[]captainhook.Endpoint `json:"Endpoints"`
+	path      string
 }
 
-func (c *Config) GetEndpoints() {
+func (c *Config) GetEndpoints() *[]captainhook.Endpoint {
 	return c.Endpoints
 }
 
-func LoadConfig(data string) (*Config, error) {
+func (c *Config) Reload() {
+	log.Println("loading", c.path)
+	c.reload(c.path)
+}
 
-	c := Config{}
-	err := yaml.Unmarshal([]byte(data), &c)
+func (c *Config) Dump() error {
+
+	d, err := yaml.Marshal(c)
+
+	if err != nil {
+		return errors.New("Unable to render YAML config from config structure.")
+	}
+
+	log.Println(string(d))
+
+	return nil
+}
+
+func (c *Config) setEndpoint(e *[]captainhook.Endpoint) {
+
+	log.Println("new confg", e)
+	c.Endpoints = e
+}
+
+func (c *Config) reload(path string) {
+
+	finfo, err := os.Stat(path)
+	if err != nil {
+		log.Fatal("Unable to determine file information", path)
+	}
+
+	switch mode := finfo.Mode(); {
+	case mode.IsDir():
+		files, err := ioutil.ReadDir(path)
+		if err != nil {
+			log.Fatal("Unable to read directory", path)
+		}
+
+		for _, f := range files {
+			c.reload(f.Name())
+		}
+	case mode.IsRegular():
+		log.Println("2")
+		file, err := os.Open(path)
+
+		if err != nil {
+			log.Fatal("Unable to open file", path)
+		}
+
+		reader := bufio.NewReader(file)
+
+		data, err := ioutil.ReadAll(reader)
+
+		if err != nil {
+			log.Fatal("Unable to read file", path)
+		}
+
+		log.Println("data", data)
+
+		loadedConfig, err := LoadConfig(data)
+
+		if err != nil {
+			log.Fatal(err, path)
+		}
+
+		c.setEndpoint((loadedConfig.GetEndpoints()))
+	}
+}
+
+func LoadConfig(data []byte) (*Config, error) {
+
+	c := Config{nil, ""}
+	err := yaml.Unmarshal(data, &c)
+
+	log.Println(string(data))
 
 	if err != nil {
 		return nil, errors.New("Unable to load config from data.")
 	}
 
+	log.Println(c)
+
 	return &c, nil
 }
 
-func NewConfig(data string) (*Config, *EndpointService, error) {
+func NewConfig(path string) (*Config, *EndpointService) {
 
-	c, err := LoadConfig(data)
+	e := make([]captainhook.Endpoint, 1)
 
-	if err != nil {
-		return nil, nil, err
-	}
+	c := &Config{&e, path}
+
+	c.Reload()
 
 	return c, &EndpointService{c}
 }
