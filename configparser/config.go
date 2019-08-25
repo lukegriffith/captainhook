@@ -11,11 +11,11 @@ import (
 )
 
 type Config struct {
-	Endpoints *[]captainhook.Endpoint `json:"Endpoints"`
+	Endpoints []captainhook.Endpoint `json:"Endpoints"`
 	path      string
 }
 
-func (c *Config) GetEndpoints() *[]captainhook.Endpoint {
+func (c *Config) GetEndpoints() []captainhook.Endpoint {
 	return c.Endpoints
 }
 
@@ -29,7 +29,7 @@ func (c *Config) Dump() error {
 	d, err := yaml.Marshal(c)
 
 	if err != nil {
-		return errors.New("Unable to render YAML config from config structure.")
+		return errors.New("unable to render YAML config from config structure")
 	}
 
 	log.Println(string(d))
@@ -37,9 +37,7 @@ func (c *Config) Dump() error {
 	return nil
 }
 
-func (c *Config) setEndpoint(e *[]captainhook.Endpoint) {
-
-	log.Println("new confg", e)
+func (c *Config) setEndpoint(e []captainhook.Endpoint) {
 	c.Endpoints = e
 }
 
@@ -54,7 +52,6 @@ func (c *Config) reload(path string) {
 	case mode.IsDir():
 		log.Fatal("Unable to load configuration from directory.")
 	case mode.IsRegular():
-		log.Println("2")
 		file, err := os.Open(path)
 
 		if err != nil {
@@ -68,8 +65,6 @@ func (c *Config) reload(path string) {
 		if err != nil {
 			log.Fatal("Unable to read file", path)
 		}
-
-		log.Println("data", data)
 
 		loadedConfig, err := LoadConfig(data)
 
@@ -101,7 +96,7 @@ func NewConfig(path string) (*Config, *EndpointService) {
 
 	e := make([]captainhook.Endpoint, 1)
 
-	c := &Config{&e, path}
+	c := &Config{e, path}
 
 	c.Reload()
 

@@ -5,3 +5,8 @@ type Rule struct {
 	Template        string `json:"template"`
 	Verify_ssl      string `json:"verify_ssl"`
 }
+
+func (rule Rule) Execute(body string) {
+
+}
+

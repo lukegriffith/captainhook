@@ -1,13 +1,10 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/lukemgriffith/captainhook"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 )
 
 func New(es captainhook.EndpointService) http.Handler {
@@ -17,10 +14,13 @@ func New(es captainhook.EndpointService) http.Handler {
 	fs := http.FileServer(http.Dir("static"))
 	AppServer := &AppServer{mux, log}
 
+	hookEng := captainhook.NewHookEngine("testSecret", log, &es)
+
+
 	log.Println("Starting Application Server.")
 
 	mux.Handle("/", fs)
-	mux.HandleFunc("/webhook/{id}", AppServer.hook)
+	mux.HandleFunc("/webhook/{id}", hookEng.Hook)
 
 	ec := NewRestController(NewEndpointController(es))
 
@@ -40,27 +40,3 @@ func (a *AppServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.mux.ServeHTTP(w, r)
 }
 
-func (a *AppServer) hook(w http.ResponseWriter, r *http.Request) {
-
-	var secret string
-
-	b, err := ioutil.ReadAll(r.Body)
-
-	if err != nil {
-		a.log.Fatal("Unable to get body from request")
-	}
-
-	body := fmt.Sprintf("%s", b)
-
-	secret = r.Header.Get("secret")
-
-	decodedBody, err := url.QueryUnescape(body)
-
-	if err != nil {
-		a.log.Fatal("Unable to URL decode body")
-	}
-
-	a.log.Print(decodedBody, " ", secret, " ", r.URL)
-
-	w.WriteHeader(204)
-}
