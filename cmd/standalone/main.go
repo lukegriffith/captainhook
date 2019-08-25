@@ -11,11 +11,11 @@ import (
 	"syscall"
 )
 
-var data string = "/tmp/test.yaml"
+var configpath string = "config.yaml"
 
 func main() {
 
-	config, svc := configparser.NewConfig(data)
+	config, svc := configparser.NewConfig(configpath)
 
 	app := server.New(svc)
 

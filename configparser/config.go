@@ -11,12 +11,12 @@ import (
 )
 
 type Config struct {
-	endpoints *[]captainhook.Endpoint `json:"endpoints"`
+	Endpoints *[]captainhook.Endpoint `json:"Endpoints"`
 	path      string
 }
 
 func (c *Config) GetEndpoints() *[]captainhook.Endpoint {
-	return c.endpoints
+	return c.Endpoints
 }
 
 func (c *Config) Reload() {
@@ -24,17 +24,25 @@ func (c *Config) Reload() {
 	c.reload(c.path)
 }
 
-func (c *Config) Dump() {
-	log.Println(c.GetEndpoints())
+func (c *Config) Dump() error {
+
+  d, err := yaml.Marshal(c)
+
+  if err != nil {
+    return errors.New("Unable to render YAML config from config structure.")
+  }
+
+	log.Println(string(d))
+
+  return nil
 }
 
 func (c *Config) setEndpoint(e *[]captainhook.Endpoint) {
 
 	log.Println("new confg", e)
-	c.endpoints = e
+	c.Endpoints = e
 }
 
-// TODO: Reload is broken and load a nil structure for endpoints. Needs to be resolved.
 
 func (c *Config) reload(path string) {
 

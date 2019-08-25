@@ -5,16 +5,16 @@ import (
 	"github.com/lukemgriffith/captainhook/configparser"
 )
 
-var data = `
-endpoints:
-  - name: test
-    secret: test
-`
+
 
 func main() {
 
-	_, es := configparser.NewConfig(data)
+	c, es := configparser.NewConfig("config.yaml")
 
-	fmt.Println(es.Endpoint("test1"))
+	fmt.Println(es.Endpoint("test"))
+
+	c.Reload()
+
+	fmt.Println(es.Endpoint("test"))
 
 }
