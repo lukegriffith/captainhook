@@ -26,15 +26,15 @@ func (c *Config) Reload() {
 
 func (c *Config) Dump() error {
 
-  d, err := yaml.Marshal(c)
+	d, err := yaml.Marshal(c)
 
-  if err != nil {
-    return errors.New("Unable to render YAML config from config structure.")
-  }
+	if err != nil {
+		return errors.New("Unable to render YAML config from config structure.")
+	}
 
 	log.Println(string(d))
 
-  return nil
+	return nil
 }
 
 func (c *Config) setEndpoint(e *[]captainhook.Endpoint) {
@@ -42,7 +42,6 @@ func (c *Config) setEndpoint(e *[]captainhook.Endpoint) {
 	log.Println("new confg", e)
 	c.Endpoints = e
 }
-
 
 func (c *Config) reload(path string) {
 

@@ -5,8 +5,6 @@ import (
 	"github.com/lukemgriffith/captainhook/configparser"
 )
 
-
-
 func main() {
 
 	c, es := configparser.NewConfig("config.yaml")
