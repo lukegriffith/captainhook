@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+  "encoding/json"
+  "bytes"
 )
 
 type HookEngine struct {
@@ -82,8 +84,21 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
+  dataBag := make(map[string]interface{})
+
+  err = json.Unmarshal([]byte(decodedBody), &dataBag)
+
+  if err != nil {
+    h.log.Fatal("Unable to unmarshal json")
+  }
+
+
+  // TODO this area is not complete. request needs to be rent to destination
+  // url.
+  var request bytes.Buffer
+
 	for _, r := range rules {
-		r.Execute(decodedBody)
+		r.Execute(&request, dataBag)
 	}
 
 	w.WriteHeader(http.StatusNoContent)

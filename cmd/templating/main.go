@@ -8,32 +8,44 @@ import (
 
 var tmpl_string string = `
 {
-  "name": "{{.Name}}",
-  "type": "{{.Type}}",
-  "ID": "{{.ID}}"
+  "bag": [
+    "test": {{.test}}
+  ]
 }
 `
 
 type templateStruct struct {
-	Name string
-	Type string
-	ID   int
+  Name string
+  Type string
+  ID int
+  Bag map[string]int
 }
+
+
 
 func main() {
 
-	t := templateStruct{"Luke", "Human", 231203}
+  // TODO opposed to passing map directly to template. create custom interface
+  // that controls the requests on the object.
+
+  m := map[string]int {
+    "test": 123,
+    "test1": 345,
+  }
+
 
 	tmpl, err := template.New("rule").Parse(tmpl_string)
 
 	if err != nil {
-		log.Fatal("unable to create template")
+		log.Fatal("unable to create template", err)
 	}
 
-	err = tmpl.Execute(os.Stdout, t)
+	err = tmpl.Execute(os.Stdout, m)
 
 	if err != nil {
 		log.Fatal("failed to write")
 	}
+
+
 
 }
