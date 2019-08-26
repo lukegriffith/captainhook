@@ -9,4 +9,3 @@ type Rule struct {
 func (rule Rule) Execute(body string) {
 
 }
-

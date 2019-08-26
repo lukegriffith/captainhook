@@ -10,12 +10,12 @@ import (
 )
 
 type HookEngine struct {
-	secret string
-	log *log.Logger
+	secret      string
+	log         *log.Logger
 	endpointSvc EndpointService
 }
 
-func NewHookEngine(secret string, log *log.Logger, ec *EndpointService) *HookEngine{
+func NewHookEngine(secret string, log *log.Logger, ec *EndpointService) *HookEngine {
 	return &HookEngine{secret, log, *ec}
 }
 
@@ -30,12 +30,12 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 
-	if name, ok = vars["id"]; ! ok {
+	if name, ok = vars["id"]; !ok {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
-	endpoints, err :=  h.endpointSvc.Endpoints()
+	endpoints, err := h.endpointSvc.Endpoints()
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -53,7 +53,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if ! found {
+	if !found {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}

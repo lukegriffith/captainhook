@@ -16,7 +16,6 @@ func New(es captainhook.EndpointService) http.Handler {
 
 	hookEng := captainhook.NewHookEngine("testSecret", log, &es)
 
-
 	log.Println("Starting Application Server.")
 
 	mux.Handle("/", fs)
@@ -39,4 +38,3 @@ type AppServer struct {
 func (a *AppServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.mux.ServeHTTP(w, r)
 }
-
