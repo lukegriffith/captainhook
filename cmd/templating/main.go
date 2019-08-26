@@ -15,24 +15,21 @@ var tmpl_string string = `
 `
 
 type templateStruct struct {
-  Name string
-  Type string
-  ID int
-  Bag map[string]int
+	Name string
+	Type string
+	ID   int
+	Bag  map[string]int
 }
-
-
 
 func main() {
 
-  // TODO opposed to passing map directly to template. create custom interface
-  // that controls the requests on the object.
+	// TODO opposed to passing map directly to template. create custom interface
+	// that controls the requests on the object.
 
-  m := map[string]int {
-    "test": 123,
-    "test1": 345,
-  }
-
+	m := map[string]int{
+		"test":  123,
+		"test1": 345,
+	}
 
 	tmpl, err := template.New("rule").Parse(tmpl_string)
 
@@ -45,7 +42,5 @@ func main() {
 	if err != nil {
 		log.Fatal("failed to write")
 	}
-
-
 
 }

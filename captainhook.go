@@ -3,28 +3,28 @@ package captainhook
 import "errors"
 
 type (
-  Endpoint struct {
-    Name    string   `json:"name"`
-    Secret  string   `json:"secret"`
-    Rules   []Rule   `json:"rules"`
-    Sources []Source `json:"sources"`
-  }
+	Endpoint struct {
+		Name    string   `json:"name"`
+		Secret  string   `json:"secret"`
+		Rules   []Rule   `json:"rules"`
+		Sources []Source `json:"sources"`
+	}
 
-  EndpointService interface {
-    Endpoint(name string) (*Endpoint, error)
-    Endpoints() ([]Endpoint, error)
-    CreateEndpoint() error
-    DeleteEndpoint() error
-  }
+	EndpointService interface {
+		Endpoint(name string) (*Endpoint, error)
+		Endpoints() ([]Endpoint, error)
+		CreateEndpoint() error
+		DeleteEndpoint() error
+	}
 
-  Source struct {
-    SourceType string `json:"sourcetype"`
-    Location   string `json:"location"`
-  }
+	Source struct {
+		SourceType string `json:"sourcetype"`
+		Location   string `json:"location"`
+	}
 
-  SourceType struct {
-    Name string `json:"name"`
-  }
+	SourceType struct {
+		Name string `json:"name"`
+	}
 )
 
 func (e *Endpoint) GetRules() ([]Rule, error) {
@@ -42,5 +42,3 @@ func (e *Endpoint) GetSources() ([]Source, error) {
 	}
 	return e.Sources, nil
 }
-
-

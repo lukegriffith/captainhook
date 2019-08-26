@@ -1,9 +1,9 @@
 package captainhook
 
 import (
-  "html/template"
-  "io"
-  "bytes"
+	"bytes"
+	"html/template"
+	"io"
 )
 
 type Rule struct {
@@ -14,21 +14,21 @@ type Rule struct {
 
 func (rule Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {
 
-  tmpl, err := template.New(rule.Destination_url).Parse(rule.Template)
+	tmpl, err := template.New(rule.Destination_url).Parse(rule.Template)
 
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
-  var tpl bytes.Buffer
+	var tpl bytes.Buffer
 
-  err = tmpl.Execute(&tpl, dataMap)
+	err = tmpl.Execute(&tpl, dataMap)
 
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
-  iw.Write(&tpl)
+	iw.Write(&tpl)
 
-  return nil
+	return nil
 }
