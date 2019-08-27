@@ -17,13 +17,13 @@ func TestRuleExecutes(t *testing.T) {
 		t.Fail()
 	}
 
-  tmplStr := iw.String()
+	tmplStr := iw.String()
 
-  t.Log("template:", tmplStr)
+	t.Log("template:", tmplStr)
 
-  if tmplStr != "This is a test" {
-    t.Fail()
-  }
+	if tmplStr != "This is a test" {
+		t.Fail()
+	}
 
 	return
 }
