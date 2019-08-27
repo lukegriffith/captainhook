@@ -11,7 +11,7 @@ import (
 	"syscall"
 )
 
-var configpath string = "config.yaml"
+var configpath string = "config.yml"
 
 func main() {
 
