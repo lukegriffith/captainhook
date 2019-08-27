@@ -29,3 +29,7 @@ jobs:
     - name: Build
       run: | 
         go build -v ./cmd/standalone
+
+    - name: Test
+      run: |
+        go test -v  

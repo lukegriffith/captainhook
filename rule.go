@@ -9,7 +9,7 @@ import (
 type Rule struct {
 	Destination_url string `json:"destination"`
 	Template        string `json:"template"`
-	Verify_ssl      bool `json:"verify_ssl"`
+	Verify_ssl      bool   `json:"verify_ssl"`
 }
 
 func (rule Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {
@@ -20,8 +20,7 @@ func (rule Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {
 		return err
 	}
 
-
-  buf := make([]byte, 0, 1)
+	buf := make([]byte, 0, 1)
 	var tpl *bytes.Buffer = bytes.NewBuffer(buf)
 
 	err = tmpl.Execute(tpl, dataMap)
