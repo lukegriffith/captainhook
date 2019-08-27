@@ -27,6 +27,8 @@ func NewHookEngine(secret string, log *log.Logger, ec *EndpointService) *HookEng
 
 func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
+	h.log.Println("processing webhook")
+
 	var name string
 	var ok bool
 
