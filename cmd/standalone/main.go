@@ -27,15 +27,14 @@ func main() {
 	go server.ListenAndServe()
 
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGUSR1,
-		syscall.SIGUSR2)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT, syscall.SIGUSR1, syscall.SIGUSR2)
 
 	for {
 		s := <-c
 		log.Print("os signal recieved. processing.")
 
 		switch s {
-		case syscall.SIGTERM:
+		case syscall.SIGTERM, syscall.SIGINT:
 			log.Print("SIGTERM: shutting server down gracefully.")
 			server.Shutdown(context.Background())
 			return
