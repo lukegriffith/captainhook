@@ -33,5 +33,5 @@ func (e *EndpointService) CreateEndpoint() error {
 }
 
 func (e *EndpointService) DeleteEndpoint() error {
-	return errors.New("Unable to create endpoint, defined from static config")
+	return errors.New("Unable to delete endpoint, defined from static config")
 }
