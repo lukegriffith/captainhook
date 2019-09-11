@@ -9,4 +9,7 @@ standalone:
 templating:
 	go run cmd/templating/main.go
 
+.PHONY: test
+test:
+	go test .
 

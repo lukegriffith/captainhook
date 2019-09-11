@@ -9,7 +9,6 @@ import (
 type Rule struct {
 	Destination_url string `json:"destination"`
 	Template        string `json:"template"`
-	Verify_ssl      bool   `json:"verify_ssl"`
 }
 
 func (rule Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {

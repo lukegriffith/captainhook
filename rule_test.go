@@ -9,7 +9,7 @@ func TestRuleExecutes(t *testing.T) {
 
 	var iw bytes.Buffer
 
-	r := Rule{"www.google.com", "{{.test}}", true}
+	r := Rule{"www.google.com", "{{.test}}"}
 
 	err := r.Execute(&iw, map[string]interface{}{"test": "This is a test"})
 
