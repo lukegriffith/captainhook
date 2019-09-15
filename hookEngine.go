@@ -37,14 +37,14 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	if name, ok = vars["id"]; !ok {
 		w.WriteHeader(http.StatusNotFound)
 
-    h.log.Println("Unable to identify ID")
+		h.log.Println("Unable to identify ID")
 		return
 	}
 
 	endpoints, err := h.endpointSvc.Endpoints()
 
 	if err != nil {
-    h.log.Println("Error getting endpoints.")
+		h.log.Println("Error getting endpoints.")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -61,7 +61,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !found {
-    h.log.Println("Endpoint", name, "does not exist.")
+		h.log.Println("Endpoint", name, "does not exist.")
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -103,10 +103,10 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	for _, r := range rules {
 		r.Execute(&request, dataBag)
-    h.log.Println(r)
-    h.log.Println("Forwarding to", r.Destination)
-    http.Post(r.Destination, "application/json", &request)
-    request.Reset()
+		h.log.Println(r)
+		h.log.Println("Forwarding to", r.Destination)
+		http.Post(r.Destination, "application/json", &request)
+		request.Reset()
 	}
 
 	w.WriteHeader(http.StatusNoContent)
