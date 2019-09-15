@@ -7,13 +7,13 @@ import (
 )
 
 type Rule struct {
-	Destination_url string `json:"destination"`
-	Template        string `json:"template"`
+	Destination string `yaml:"destination"`
+	Template        string `yaml:"template"`
 }
 
 func (rule Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {
 
-	tmpl, err := template.New(rule.Destination_url).Parse(rule.Template)
+	tmpl, err := template.New(rule.Destination).Parse(rule.Template)
 
 	if err != nil {
 		return err

@@ -4,10 +4,10 @@ import "errors"
 
 type (
 	Endpoint struct {
-		Name    string   `json:"name"`
-		Secret  string   `json:"secret"`
-		Rules   []Rule   `json:"rules"`
-		Sources []Source `json:"sources"`
+		Name    string   `yaml:"name"`
+		Secret  string   `yaml:"secret"`
+		Rules   []Rule   `yaml:"rules"`
+		Sources []Source `yaml:"sources"`
 	}
 
 	EndpointService interface {
@@ -18,12 +18,12 @@ type (
 	}
 
 	Source struct {
-		SourceType string `json:"sourcetype"`
-		Location   string `json:"location"`
+		SourceType string `yaml:"sourcetype"`
+		Location   string `yaml:"location"`
 	}
 
 	SourceType struct {
-		Name string `json:"name"`
+		Name string `yaml:"name"`
 	}
 )
 

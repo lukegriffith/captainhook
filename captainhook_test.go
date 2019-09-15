@@ -20,7 +20,7 @@ func TestEndpoint(t *testing.T) {
     t.Fail()
   }
 
-  if rul[0].Destination_url != "testURL" {
+  if rul[0].Destination != "testURL" {
     t.Fail()
   }
 }
