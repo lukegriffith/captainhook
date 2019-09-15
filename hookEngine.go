@@ -104,8 +104,8 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	for _, r := range rules {
 		r.Execute(&request, dataBag)
     h.log.Println(r)
-    h.log.Println("Forwarding to", r.Destination_url)
-    http.Post(r.Destination_url, "application/json", &request)
+    h.log.Println("Forwarding to", r.Destination)
+    http.Post(r.Destination, "application/json", &request)
     request.Reset()
 	}
 

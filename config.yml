@@ -2,7 +2,7 @@ endpoints:
   - name: test
     secret: test
     rules:
-      - destination: http://localhost:8081/endpoint/test
+      - destination: http://localhost:8081/webhook/test
         template: |
           my template
   - name: hooks
