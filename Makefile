@@ -3,7 +3,7 @@ default: standalone
 
 .PHONY: standalone
 standalone:
-	go run cmd/standalone/main.go
+	GODEBUG=http2debug=2 go run cmd/standalone/main.go
 
 .PHONY: templating
 templating:

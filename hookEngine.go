@@ -36,12 +36,15 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	if name, ok = vars["id"]; !ok {
 		w.WriteHeader(http.StatusNotFound)
+
+    h.log.Println("Unable to identify ID")
 		return
 	}
 
 	endpoints, err := h.endpointSvc.Endpoints()
 
 	if err != nil {
+    h.log.Println("Error getting endpoints.")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -58,6 +61,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !found {
+    h.log.Println("Endpoint", name, "does not exist.")
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
@@ -87,19 +91,22 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	dataBag := make(map[string]interface{})
-
 	err = json.Unmarshal([]byte(decodedBody), &dataBag)
 
 	if err != nil {
-		h.log.Fatal("Unable to unmarshal json")
+		h.log.Println("Unable to unmarshal json")
 	}
 
-	// TODO this area is not complete. request needs to be rent to destination
+	// TODO this area is not complete. request needs to be sent to destination
 	// url.
 	var request bytes.Buffer
 
 	for _, r := range rules {
 		r.Execute(&request, dataBag)
+    h.log.Println(r)
+    h.log.Println("Forwarding to", r.Destination_url)
+    http.Post(r.Destination_url, "application/json", &request)
+    request.Reset()
 	}
 
 	w.WriteHeader(http.StatusNoContent)
