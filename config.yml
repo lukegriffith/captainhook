@@ -2,7 +2,7 @@ endpoints:
   - name: test
     secret: test
     rules:
-      - destination: test
+      - destination: http://localhost:8081/endpoint/test
         template: |
           my template
         verify_ssl: true

@@ -8,7 +8,7 @@ import (
 
 type Rule struct {
 	Destination string `yaml:"destination"`
-	Template        string `yaml:"template"`
+	Template    string `yaml:"template"`
 }
 
 func (rule Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {
