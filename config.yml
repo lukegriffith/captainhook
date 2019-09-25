@@ -2,8 +2,12 @@ endpoints:
   - name: test
     secret: test
     rules:
-      - destination: http://localhost:8081/webhook/test
+      - destination: http://localhost:8081/webhook/hooks
         template: |
-          my template
+          { "test" : "{{ .test }}" }
   - name: hooks
     secret: supersecret
+    rules:
+      - destination: http://localhost:8082
+        template: |
+          { "hook_executed": "{{ .test }}" }

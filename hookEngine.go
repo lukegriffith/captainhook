@@ -21,10 +21,6 @@ func NewHookEngine(secret string, log *log.Logger, ec *EndpointService) *HookEng
 	return &HookEngine{secret, log, *ec}
 }
 
-// TODO
-//  This is likely blocking the main execution thread. I think i'll need to send details to a channel and have a
-//  separate go routine pickup the request.
-
 func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Println("processing webhook")
@@ -103,7 +99,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	for _, r := range rules {
 		r.Execute(&request, dataBag)
-		h.log.Println(r)
+		h.log.Println("Rendered template: ", request.String())
 		h.log.Println("Forwarding to", r.Destination)
 		http.Post(r.Destination, "application/json", &request)
 		request.Reset()
