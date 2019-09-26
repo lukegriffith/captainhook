@@ -12,13 +12,12 @@ import (
 )
 
 type HookEngine struct {
-	secret      string
 	log         *log.Logger
 	endpointSvc EndpointService
 }
 
-func NewHookEngine(secret string, log *log.Logger, ec *EndpointService) *HookEngine {
-	return &HookEngine{secret, log, *ec}
+func NewHookEngine(log *log.Logger, ec *EndpointService) *HookEngine {
+	return &HookEngine{log, *ec}
 }
 
 func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {

@@ -14,7 +14,7 @@ func New(es captainhook.EndpointService) http.Handler {
 	fs := http.FileServer(http.Dir("static"))
 	AppServer := &AppServer{mux, log}
 
-	hookEng := captainhook.NewHookEngine("testSecret", log, &es)
+	hookEng := captainhook.NewHookEngine(log, &es)
 
 	log.Println("Starting Application Server.")
 
