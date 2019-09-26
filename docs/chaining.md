@@ -40,10 +40,8 @@ The standalone server reads the config in and loads it into memory.
 
 Running a curl command, it can trigger the test rule to start the chain. 
 
-```bash
-lg at desktop in ~ 
-$ curl http://localhost:8081/webhook/test -X POST --data '{"test":"tetstete"}'
-
+```bash 
+$ curl http://localhost:8081/webhook/test -X POST --data '{"test":"payload123"}'
 ```
 
 The hooks are executed templating out hook1, then forwarding and moving to hook2.
@@ -53,17 +51,13 @@ As port 8082 is not the application, it stops the chain.
 ```
 
 CaptainHook 2019/09/25 20:28:00 processing webhook
-CaptainHook 2019/09/25 20:28:00 Rendered template:  { "test" : "tetstete" }
+CaptainHook 2019/09/25 20:28:00 Rendered template:  { "test" : "payload123" }
 
 CaptainHook 2019/09/25 20:28:00 Forwarding to http://localhost:8081/webhook/hooks
 CaptainHook 2019/09/25 20:28:00 processing webhook
-CaptainHook 2019/09/25 20:28:00 Rendered template:  { "hook_executed": "tetstete" }
+CaptainHook 2019/09/25 20:28:00 Rendered template:  { "hook_executed": "payload123" }
 
 CaptainHook 2019/09/25 20:28:00 Forwarding to http://localhost:8082
-2019/09/25 20:32:36 os signal recieved. processing.
-2019/09/25 20:32:36 SIGTERM: shutting server down gracefully.
-
-Process finished with exit code 0
 
 ```
 
