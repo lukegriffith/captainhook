@@ -1,8 +1,9 @@
 # Chaining
 
 
-Executing the standalone server, with the below config has the test rule, forward its result via calling localhost,
-to the rules webhook endpoint. 
+Executing the standalone server with the below config has hook1, forward its 
+result via calling localhost, to the rules hook2 endpoint. 
+
 ```
 /usr/lib/go/bin/go build -o /tmp/___cmd_standalone /go/src/github.com/lukemgriffith/captainhook/cmd/standalone/main.go #gosetup
 /tmp/___cmd_standalone #gosetup
@@ -11,7 +12,8 @@ CaptainHook 2019/09/25 20:27:55 Starting Application Server.
 2019/09/25 20:27:55 endpoints:
 ```
 
-In this config, rule hook1 templates out a json object and forwards it to the rule hook2. 
+In this config, rule hook1 templates out a json object and forwards it to the 
+rule hook2. 
 
 ```yaml
   - name: hook1
@@ -44,11 +46,9 @@ $ curl http://localhost:8081/webhook/test -X POST --data '{"test":"tetstete"}'
 
 ```
 
-
 The hooks are executed templating out hook1, then forwarding and moving to hook2.
 
 As port 8082 is not the application, it stops the chain.
-
 
 ```
 
