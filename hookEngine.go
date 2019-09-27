@@ -36,28 +36,14 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	endpoints, err := h.endpointSvc.Endpoints()
+	var endpoint *Endpoint
+
+
+	endpoint, err := h.endpointSvc.Endpoint(name)
 
 	if err != nil {
-		h.log.Println("Error getting endpoints.")
+		h.log.Println("Error getting endpoint", name)
 		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	var found bool = false
-	var endpoint Endpoint
-
-	for _, val := range endpoints {
-		if val.Name == name {
-			endpoint = val
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		h.log.Println("Endpoint", name, "does not exist.")
-		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 
