@@ -6,11 +6,12 @@ import (
 	"io"
 )
 
+//TODO: Document
 type Rule struct {
 	Destination string `yaml:"destination"`
 	Template    string `yaml:"template"`
 }
-
+//TODO: Document
 func (rule Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {
 
 	tmpl, err := template.New(rule.Destination).Parse(rule.Template)

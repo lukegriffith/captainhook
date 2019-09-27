@@ -10,20 +10,24 @@ import (
 	"os"
 )
 
+//TODO: Document
 type Config struct {
 	Endpoints []captainhook.Endpoint `json:"Endpoints"`
 	path      string
 }
 
+//TODO: Document
 func (c *Config) GetEndpoints() []captainhook.Endpoint {
 	return c.Endpoints
 }
 
+//TODO: Document
 func (c *Config) Reload() {
 	log.Println("loading", c.path)
 	c.reload(c.path)
 }
 
+//TODO: Document
 func (c *Config) Dump() error {
 
 	d, err := yaml.Marshal(c)
@@ -37,10 +41,12 @@ func (c *Config) Dump() error {
 	return nil
 }
 
+//TODO: Document
 func (c *Config) setEndpoint(e []captainhook.Endpoint) {
 	c.Endpoints = e
 }
 
+//TODO: Document
 func (c *Config) reload(path string) {
 
 	finfo, err := os.Stat(path)
@@ -76,6 +82,7 @@ func (c *Config) reload(path string) {
 	}
 }
 
+//TODO: Document
 func LoadConfig(data []byte) (*Config, error) {
 
 	c := Config{nil, ""}
@@ -92,6 +99,7 @@ func LoadConfig(data []byte) (*Config, error) {
 	return &c, nil
 }
 
+//TODO: Document
 func NewConfig(path string) (*Config, *EndpointService) {
 
 	e := make([]captainhook.Endpoint, 1)

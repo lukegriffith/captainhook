@@ -11,15 +11,18 @@ import (
 	"net/url"
 )
 
+//TODO: Document
 type HookEngine struct {
 	log         *log.Logger
 	endpointSvc EndpointService
 }
 
+//TODO: Document
 func NewHookEngine(log *log.Logger, ec *EndpointService) *HookEngine {
 	return &HookEngine{log, *ec}
 }
 
+//TODO: Document
 func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Println("processing webhook")
@@ -31,18 +34,16 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	if name, ok = vars["id"]; !ok {
 		w.WriteHeader(http.StatusNotFound)
-
-		h.log.Println("Unable to identify ID")
+		h.log.Println("unable to identify ID")
 		return
 	}
 
 	var endpoint *Endpoint
 
-
 	endpoint, err := h.endpointSvc.Endpoint(name)
 
 	if err != nil {
-		h.log.Println("Error getting endpoint", name)
+		h.log.Println("error getting endpoint", name)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -50,7 +51,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	b, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
-		h.log.Println("Unable to get body from request")
+		h.log.Println("unable to get body from request")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -58,16 +59,14 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	body := fmt.Sprintf("%s", b)
 	decodedBody, err := url.QueryUnescape(body)
 
-	//secret = r.Header.Get("secret")
-
 	if err != nil {
-		h.log.Fatal("Unable to URL decode body")
+		h.log.Fatal("unable to URL decode body")
 	}
 
 	rules, err := endpoint.GetRules()
 
 	if err != nil {
-		h.log.Println("Unable to enumerate rules endpoint", endpoint.Name)
+		h.log.Println("unable to enumerate rules endpoint", endpoint.Name)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
@@ -75,18 +74,26 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal([]byte(decodedBody), &dataBag)
 
 	if err != nil {
-		h.log.Println("Unable to unmarshal json")
+		h.log.Println("unable to unmarshal json")
 	}
 
-	// TODO this area is not complete. request needs to be sent to destination
-	// url.
 	var request bytes.Buffer
 
 	for _, r := range rules {
-		r.Execute(&request, dataBag)
-		h.log.Println("Rendered template: ", request.String())
-		h.log.Println("Forwarding to", r.Destination)
-		http.Post(r.Destination, "application/json", &request)
+		err := r.Execute(&request, dataBag)
+
+		if err != nil {
+			h.log.Println(r, "failed to execute template.")
+			continue
+		}
+		h.log.Println("rendered template: ", request.String())
+		h.log.Println("forwarding to", r.Destination)
+
+		resp, err := http.Post(r.Destination, "application/json", &request)
+
+		if err != nil {
+			h.log.Println("post request to", r.Destination, "failed.", resp.Status, "return status.")
+		}
 		request.Reset()
 	}
 

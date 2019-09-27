@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+//TODO: Document
 type Controller interface {
 	Post(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
@@ -12,16 +13,19 @@ type Controller interface {
 	Delete(w http.ResponseWriter, r *http.Request)
 }
 
+//TODO: Document
 type RestController struct {
 	log        *log.Logger
 	controller Controller
 }
 
+//TODO: Document
 func NewRestController(c Controller) RestController {
 	log := NewLog("RestController ")
 	return RestController{log, c}
 }
 
+//TODO: Document
 func (rc *RestController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	rc.log.Println("Rest Controller recieved call.")
 

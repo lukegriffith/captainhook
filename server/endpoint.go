@@ -8,11 +8,13 @@ import (
 	"net/http"
 )
 
+//TODO: Document
 type EndpointController struct {
 	service captainhook.EndpointService
 	log     *log.Logger
 }
 
+//TODO: Document
 func NewEndpointController(es captainhook.EndpointService) *EndpointController {
 	log := NewLog("EndpointController ")
 	return &EndpointController{es, log}
@@ -29,6 +31,7 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 		obj, err := e.service.Endpoint(name)
 
 		if err != nil {
+			// TODO: Log
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
@@ -36,6 +39,7 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 		json, err := json.Marshal(obj)
 
 		if err != nil {
+			// TODO: Log
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
@@ -47,12 +51,14 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 		obj, err := e.service.Endpoints()
 
 		if err != nil {
+			// TODO: Log
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
 		json, err := json.Marshal(obj)
 		if err != nil {
+			// TODO: Log
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}

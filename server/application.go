@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+//TODO: Document
 func New(es captainhook.EndpointService) http.Handler {
 
 	log := NewLog("CaptainHook ")
@@ -30,11 +31,13 @@ func New(es captainhook.EndpointService) http.Handler {
 
 }
 
+//TODO: Document
 type AppServer struct {
 	mux *mux.Router
 	log *log.Logger
 }
 
+//TODO: Document
 func (a *AppServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.mux.ServeHTTP(w, r)
 }

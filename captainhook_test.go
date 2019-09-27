@@ -4,6 +4,7 @@ import (
 	"testing"
 )
 
+//TODO: Document
 func TestEndpoint(t *testing.T) {
 
 	var (

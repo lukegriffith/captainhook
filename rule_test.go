@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+//TODO: Document
 func TestRuleExecutes(t *testing.T) {
 
 	var iw bytes.Buffer
