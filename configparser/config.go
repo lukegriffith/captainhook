@@ -10,24 +10,26 @@ import (
 	"os"
 )
 
-//TODO: Document
+// Structure contains the whole configuration when using the config parser
+// backend, this is loaded directly from a YAML declaration, and is immutable. 
 type Config struct {
 	Endpoints []captainhook.Endpoint `json:"Endpoints"`
 	path      string
 }
 
-//TODO: Document
+// Returns the endpoints of the configuration. 
 func (c *Config) GetEndpoints() []captainhook.Endpoint {
 	return c.Endpoints
 }
 
-//TODO: Document
+// Public method to reloads configuration from disk via specified path. 
 func (c *Config) Reload() {
 	log.Println("loading", c.path)
 	c.reload(c.path)
 }
 
-//TODO: Document
+// Dumps YAML Readable configuration to application log for debugging 
+// purposes. 
 func (c *Config) Dump() error {
 
 	d, err := yaml.Marshal(c)
@@ -41,12 +43,12 @@ func (c *Config) Dump() error {
 	return nil
 }
 
-//TODO: Document
+// sets the endpoints that are associated to the configuration.
 func (c *Config) setEndpoint(e []captainhook.Endpoint) {
 	c.Endpoints = e
 }
 
-//TODO: Document
+// reloads the configuration from the provided path.
 func (c *Config) reload(path string) {
 
 	finfo, err := os.Stat(path)
@@ -72,7 +74,7 @@ func (c *Config) reload(path string) {
 			log.Fatal("Unable to read file", path)
 		}
 
-		loadedConfig, err := LoadConfig(data)
+		loadedConfig, err := loadConfig(data)
 
 		if err != nil {
 			log.Fatal(err, path)
@@ -82,8 +84,8 @@ func (c *Config) reload(path string) {
 	}
 }
 
-//TODO: Document
-func LoadConfig(data []byte) (*Config, error) {
+// Loads configuration from a byte array performing validation.
+func loadConfig(data []byte) (*Config, error) {
 
 	c := Config{nil, ""}
 	err := yaml.Unmarshal(data, &c)
@@ -99,7 +101,7 @@ func LoadConfig(data []byte) (*Config, error) {
 	return &c, nil
 }
 
-//TODO: Document
+// Constructer.
 func NewConfig(path string) (*Config, *EndpointService) {
 
 	e := make([]captainhook.Endpoint, 1)

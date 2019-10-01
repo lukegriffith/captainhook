@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-//TODO: Document
+// Ensures the endpoint services constructs correctly and rules are obtained.
 func TestEndpoint(t *testing.T) {
 
 	var (
