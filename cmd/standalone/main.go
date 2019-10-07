@@ -15,7 +15,7 @@ var configpath string = "config.yml"
 
 func main() {
 
-	config, svc := configparser.NewConfig(configpath)
+	_, svc := configparser.NewConfig(configpath)
 
 	app := server.New(svc)
 
@@ -29,23 +29,10 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT, syscall.SIGUSR1, syscall.SIGUSR2)
 
-	for {
-		s := <-c
-		log.Print("os signal recieved. processing.")
+  _ = <-c
+  log.Print("os signal recieved processing.")
 
-		switch s {
-		case syscall.SIGTERM, syscall.SIGINT:
-			log.Print("SIGTERM: shutting server down gracefully.")
-			server.Shutdown(context.Background())
-			return
+  log.Print("shutting server down gracefully.")
+  server.Shutdown(context.Background())
 
-		case syscall.SIGUSR1:
-			log.Print("SIGUSR1: reloading configuration.")
-			config.Reload()
-
-		case syscall.SIGUSR2:
-			log.Print("SIGUSR2: Dump config.")
-			config.Dump()
-		}
-	}
 }

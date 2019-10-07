@@ -30,11 +30,12 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	var name string
 	var ok bool
 
+	// Extract variables from request.
 	vars := mux.Vars(r)
 
 	if name, ok = vars["id"]; !ok {
 		w.WriteHeader(http.StatusNotFound)
-		h.log.Println("unable to identify ID")
+		h.log.Println("no id provided.")
 		return
 	}
 
