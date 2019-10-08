@@ -81,7 +81,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	var request bytes.Buffer
 
 	for _, r := range rules {
-		err := r.Execute(&request, dataBag)
+		err := r.Function(&request, dataBag)
 
 		if err != nil {
 			h.log.Println(r, "failed to execute template.")
