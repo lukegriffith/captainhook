@@ -13,17 +13,17 @@ type Rule struct {
 	Type 		string `yaml:type`
 	Destination string `yaml:destination`
 	Arguments   map[string]string `yaml:arguments`
-	Function 	func(iw io.Writer, dataMap map[string]interface{}) error
+	Function 	func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error
 }
 
 func AssignFunction(rule *Rule) {
 
 	switch t := rule.Type; t {
 	case "template":
-		rule.Function = rule.TemplateFunc
+		rule.Function = TemplateFunc
 
 	default:
-		rule.Function = rule.NoOp
+		rule.Function = NoOp
 
 	}
 }
@@ -38,21 +38,11 @@ func (rule Rule) GetArg(name string) (string, error) {
 	return val, nil
 }
 
-
-
-
-func(rule Rule) NoOp (iw io.Writer, dataMap map[string]interface{}) error {
+func NoOp (iw io.Writer, dataMap map[string]interface{}, rule *Rule) error {
 	return nil
 }
 
-
-func(rule Rule) TemplateFunc(iw io.Writer, dataMap map[string]interface{}) error {
-
-	dest, err := rule.GetArg("destination")
-
-	if err != nil {
-		return err
-	}
+func TemplateFunc(iw io.Writer, dataMap map[string]interface{}, rule *Rule) error {
 
 	tmplStr, err := rule.GetArg("template")
 
@@ -60,7 +50,7 @@ func(rule Rule) TemplateFunc(iw io.Writer, dataMap map[string]interface{}) error
 		return err
 	}
 
-	tmpl, err := template.New(dest).Parse(tmplStr)
+	tmpl, err := template.New("tmpl").Parse(tmplStr)
 
 	if err != nil {
 		return err
@@ -75,7 +65,11 @@ func(rule Rule) TemplateFunc(iw io.Writer, dataMap map[string]interface{}) error
 		return err
 	}
 
-	iw.Write(tpl.Bytes())
+	_, err = iw.Write(tpl.Bytes())
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
