@@ -13,8 +13,7 @@ func TestRuleExecutes(t *testing.T) {
 	args := make(map[string]string)
 	args["template"] = "{{.test}}"
 
-
-	r := Rule{"template","www.google.com", args, TemplateFunc}
+	r := Rule{"template", "www.google.com", args, TemplateFunc}
 
 	err := r.Function(&iw, map[string]interface{}{"test": "This is a test"}, &r)
 

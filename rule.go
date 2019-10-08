@@ -11,10 +11,10 @@ import (
 // Contains rule state, is assigned a function based on type.
 // Type mapped by AssignFunction.
 type Rule struct {
-	Type 		string `yaml:type`
-	Destination string `yaml:destination`
+	Type        string            `yaml:type`
+	Destination string            `yaml:destination`
 	Arguments   map[string]string `yaml:arguments`
-	Function 	func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error
+	Function    func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error
 }
 
 // TODO find out if theres a better way to do this.
@@ -35,13 +35,13 @@ func (rule Rule) GetArg(name string) (string, error) {
 
 	val, ok := rule.Arguments[name]
 
-	if ! ok {
+	if !ok {
 		return "", errors.New(fmt.Sprintf("Unable to find argument %s", name))
 	}
 	return val, nil
 }
 
-func NoOp (iw io.Writer, dataMap map[string]interface{}, rule *Rule) error {
+func NoOp(iw io.Writer, dataMap map[string]interface{}, rule *Rule) error {
 	return nil
 }
 
