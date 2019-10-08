@@ -25,8 +25,6 @@ func NewHookEngine(log *log.Logger, ec *EndpointService) *HookEngine {
 //TODO: Document
 func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
-	h.log.Println("processing webhook")
-
 	var name string
 	var ok bool
 
@@ -38,6 +36,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		h.log.Println("no id provided.")
 		return
 	}
+	h.log.Println("processing webhook:", name)
 
 	var endpoint *Endpoint
 
