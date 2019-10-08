@@ -8,7 +8,8 @@ import (
 	"io"
 )
 
-//TODO: Document
+// Contains rule state, is assigned a function based on type.
+// Type mapped by AssignFunction.
 type Rule struct {
 	Type 		string `yaml:type`
 	Destination string `yaml:destination`
@@ -16,6 +17,8 @@ type Rule struct {
 	Function 	func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error
 }
 
+// TODO find out if theres a better way to do this.
+// Maps the function to the rule type.
 func AssignFunction(rule *Rule) {
 
 	switch t := rule.Type; t {
