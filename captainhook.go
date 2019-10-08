@@ -5,7 +5,7 @@ import "errors"
 type (
 
 	// Datastructure contains information on an Endpoint, with associated rules
-  // and sources.
+	// and sources.
 	Endpoint struct {
 		Name    string   `yaml:"name"`
 		Secret  string   `yaml:"secret"`
@@ -14,9 +14,9 @@ type (
 	}
 
 	// Interface provides an extensible way of implementing the EndpointService,
-  // this is used in various parts of the application logic to decouple
-  // implementations.
-  EndpointService interface {
+	// this is used in various parts of the application logic to decouple
+	// implementations.
+	EndpointService interface {
 		Endpoint(name string) (*Endpoint, error)
 		Endpoints() ([]Endpoint, error)
 		CreateEndpoint() error
@@ -24,7 +24,7 @@ type (
 	}
 
 	// Contains information on the type of source expected in an endpoint.
-  Source struct {
+	Source struct {
 		SourceType string `yaml:"sourcetype"`
 		Location   string `yaml:"location"`
 	}

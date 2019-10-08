@@ -11,25 +11,25 @@ import (
 )
 
 // Structure contains the whole configuration when using the config parser
-// backend, this is loaded directly from a YAML declaration, and is immutable. 
+// backend, this is loaded directly from a YAML declaration, and is immutable.
 type Config struct {
 	Endpoints []captainhook.Endpoint `json:"Endpoints"`
 	path      string
 }
 
-// Returns the endpoints of the configuration. 
+// Returns the endpoints of the configuration.
 func (c *Config) GetEndpoints() []captainhook.Endpoint {
 	return c.Endpoints
 }
 
-// Public method to reloads configuration from disk via specified path. 
+// Public method to reloads configuration from disk via specified path.
 func (c *Config) Reload() {
 	log.Println("loading", c.path)
 	c.reload(c.path)
 }
 
-// Dumps YAML Readable configuration to application log for debugging 
-// purposes. 
+// Dumps YAML Readable configuration to application log for debugging
+// purposes.
 func (c *Config) Dump() error {
 
 	d, err := yaml.Marshal(c)
