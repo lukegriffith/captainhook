@@ -2,20 +2,55 @@ package captainhook
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"html/template"
 	"io"
 )
 
 //TODO: Document
 type Rule struct {
-	Destination string `yaml:"destination"`
-	Template    string `yaml:"template"`
+	Type 		string `yaml:type`
+	Destination string `yaml:destination`
+	Arguments   map[string]string `yaml:arguments`
+	Function 	func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error
 }
 
-//TODO: Document
-func (rule Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {
+func AssignFunction(rule *Rule) {
 
-	tmpl, err := template.New(rule.Destination).Parse(rule.Template)
+	switch t := rule.Type; t {
+	case "template":
+		rule.Function = TemplateFunc
+
+	default:
+		rule.Function = NoOp
+
+	}
+}
+
+func (rule Rule) GetArg(name string) (string, error) {
+
+	val, ok := rule.Arguments[name]
+
+	if ! ok {
+		return "", errors.New(fmt.Sprintf("Unable to find argument %s", name))
+	}
+	return val, nil
+}
+
+func NoOp (iw io.Writer, dataMap map[string]interface{}, rule *Rule) error {
+	return nil
+}
+
+func TemplateFunc(iw io.Writer, dataMap map[string]interface{}, rule *Rule) error {
+
+	tmplStr, err := rule.GetArg("template")
+
+	if err != nil {
+		return err
+	}
+
+	tmpl, err := template.New("tmpl").Parse(tmplStr)
 
 	if err != nil {
 		return err
@@ -30,7 +65,11 @@ func (rule Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {
 		return err
 	}
 
-	iw.Write(tpl.Bytes())
+	_, err = iw.Write(tpl.Bytes())
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

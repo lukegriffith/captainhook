@@ -25,8 +25,6 @@ func NewHookEngine(log *log.Logger, ec *EndpointService) *HookEngine {
 //TODO: Document
 func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
-	h.log.Println("processing webhook")
-
 	var name string
 	var ok bool
 
@@ -38,6 +36,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		h.log.Println("no id provided.")
 		return
 	}
+	h.log.Println("processing webhook:", name)
 
 	var endpoint *Endpoint
 
@@ -81,19 +80,22 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	var request bytes.Buffer
 
 	for _, r := range rules {
-		err := r.Execute(&request, dataBag)
+
+		AssignFunction(&r)
+
+		err := r.Function(&request, dataBag, &r)
 
 		if err != nil {
-			h.log.Println(r, "failed to execute template.")
+			h.log.Println(r, "failed to execute template.", err)
 			continue
 		}
 		h.log.Println("rendered template: ", request.String())
 		h.log.Println("forwarding to", r.Destination)
 
-		resp, err := http.Post(r.Destination, "application/json", &request)
+		_, err = http.Post(r.Destination, "application/json", &request)
 
 		if err != nil {
-			h.log.Println("post request to", r.Destination, "failed.", resp.Status, "return status.")
+			h.log.Println("post request to", r.Destination, "failed.")
 		}
 		request.Reset()
 	}
