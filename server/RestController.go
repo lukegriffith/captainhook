@@ -6,6 +6,8 @@ import (
 )
 
 //TODO: Document
+// Controller specifies the objectes required to participate in the server. an implementing object must comply to these
+// methods to allow the server to correctly request its services.
 type Controller interface {
 	Post(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
@@ -13,7 +15,7 @@ type Controller interface {
 	Delete(w http.ResponseWriter, r *http.Request)
 }
 
-//TODO: Document
+//TODO: Holds a controller and logging structure, is mainly a way to get around go's lack of generics.
 type RestController struct {
 	log        *log.Logger
 	controller Controller
