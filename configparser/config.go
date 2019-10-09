@@ -101,7 +101,7 @@ func loadConfig(data []byte) (*Config, error) {
 	return &c, nil
 }
 
-// Constructer.
+// Constructor.
 func NewConfig(path string) (*Config, *EndpointService) {
 
 	e := make([]captainhook.Endpoint, 1)

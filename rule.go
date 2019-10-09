@@ -16,6 +16,7 @@ type Rule struct {
 	Function 	func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error
 }
 
+// TODO make this mapping more configurable.
 func AssignFunction(rule *Rule) {
 
 	switch t := rule.Type; t {

@@ -66,7 +66,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	rules, err := endpoint.GetRules()
 
 	if err != nil {
-		h.log.Println("unable to enumerate rules endpoint", endpoint.Name)
+		h.log.Println("unable to enumerate rules, endpoint", endpoint.Name)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
