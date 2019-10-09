@@ -10,9 +10,12 @@ func TestRuleExecutes(t *testing.T) {
 
 	var iw bytes.Buffer
 
-	r := Rule{"www.google.com", "{{.test}}"}
+	args := make(map[string]string)
+	args["template"] = "{{.test}}"
 
-	err := r.Execute(&iw, map[string]interface{}{"test": "This is a test"})
+	r := Rule{"template", "www.google.com", args, TemplateFunc}
+
+	err := r.Function(&iw, map[string]interface{}{"test": "This is a test"}, &r)
 
 	if err != nil {
 		t.Fail()

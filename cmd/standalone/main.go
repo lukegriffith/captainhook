@@ -29,10 +29,10 @@ func main() {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
-  _ = <-c
-  log.Print("os signal recieved processing.")
+	_ = <-c
+	log.Print("os signal recieved processing.")
 
-  log.Print("shutting server down gracefully.")
-  server.Shutdown(context.Background())
+	log.Print("shutting server down gracefully.")
+	server.Shutdown(context.Background())
 
 }
