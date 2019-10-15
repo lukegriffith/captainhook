@@ -15,7 +15,7 @@ func TestRuleExecutes(t *testing.T) {
 
 	r := Rule{"template", "www.google.com", args, TemplateFunc}
 
-	err := r.Function(&iw, map[string]interface{}{"test": "This is a test"}, &r)
+	err := r.function(&iw, map[string]interface{}{"test": "This is a test"}, &r)
 
 	if err != nil {
 		t.Fail()

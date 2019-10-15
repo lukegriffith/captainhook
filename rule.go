@@ -14,7 +14,29 @@ type Rule struct {
 	Type        string            `yaml:type`
 	Destination string            `yaml:destination`
 	Arguments   map[string]string `yaml:arguments`
-	Function    func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error
+	function    func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error
+}
+
+// Executes the function poitner associated to the rule.
+func (r *Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {
+	if r.function == nil {
+		return errors.New("No function pointer assigned")
+	}
+
+	r.function(iw, dataMap, r)
+	return nil
+}
+
+// Sets the function pointer of the rule.
+func (r *Rule) SetFunction(f func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error) error {
+
+		if r.function != nil {
+			return errors.New("Function already exists.")
+		}
+
+		r.function = f
+
+		return nil
 }
 
 // TODO make this mapping more configurable.
@@ -24,10 +46,10 @@ func AssignFunction(rule *Rule) {
 
 	switch t := rule.Type; t {
 	case "template":
-		rule.Function = TemplateFunc
+		rule.SetFunction(TemplateFunc)
 
 	default:
-		rule.Function = NoOp
+		rule.SetFunction(NoOp)
 
 	}
 }

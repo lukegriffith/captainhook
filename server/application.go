@@ -22,7 +22,7 @@ func New(es captainhook.EndpointService) http.Handler {
 	mux.Handle("/", fs)
 	mux.HandleFunc("/webhook/{id}", hookEng.Hook)
 
-	ec := NewRestController(NewEndpointController(es))
+	ec :=  RestController{log, NewEndpointController(es)}
 
 	mux.HandleFunc("/endpoint", ec.ServeHTTP)
 	mux.HandleFunc("/endpoint/{name}", ec.ServeHTTP)

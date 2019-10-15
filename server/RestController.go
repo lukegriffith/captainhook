@@ -7,10 +7,10 @@ import (
 
 //TODO: Document
 type Controller interface {
-	Post(w http.ResponseWriter, r *http.Request)
+	//Post(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
-	Patch(w http.ResponseWriter, r *http.Request)
-	Delete(w http.ResponseWriter, r *http.Request)
+	//Patch(w http.ResponseWriter, r *http.Request)
+	//Delete(w http.ResponseWriter, r *http.Request)
 }
 
 //TODO: Document
@@ -20,6 +20,7 @@ type RestController struct {
 }
 
 //TODO: Document
+// DO WE NEED TO REMOVE THIS???
 func NewRestController(c Controller) RestController {
 	log := NewLog("RestController ")
 	return RestController{log, c}
@@ -32,7 +33,7 @@ func (rc *RestController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		rc.log.Println("Get method called on", r.URL)
 		rc.controller.Get(w, r)
-	} else if r.Method == "POST" {
+	/*} else if r.Method == "POST" {
 		rc.log.Println("Post method called on", r.URL)
 		rc.controller.Post(w, r)
 	} else if r.Method == "PATCH" {
@@ -40,7 +41,7 @@ func (rc *RestController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		rc.controller.Patch(w, r)
 	} else if r.Method == "DELETE" {
 		rc.log.Println("Delete method called on", r.URL)
-		rc.controller.Delete(w, r)
+		rc.controller.Delete(w, r)*/
 	} else {
 		w.WriteHeader(405)
 	}
