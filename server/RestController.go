@@ -33,15 +33,15 @@ func (rc *RestController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		rc.log.Println("Get method called on", r.URL)
 		rc.controller.Get(w, r)
-	/*} else if r.Method == "POST" {
-		rc.log.Println("Post method called on", r.URL)
-		rc.controller.Post(w, r)
-	} else if r.Method == "PATCH" {
-		rc.log.Println("Patch method called on", r.URL)
-		rc.controller.Patch(w, r)
-	} else if r.Method == "DELETE" {
-		rc.log.Println("Delete method called on", r.URL)
-		rc.controller.Delete(w, r)*/
+		/*} else if r.Method == "POST" {
+			rc.log.Println("Post method called on", r.URL)
+			rc.controller.Post(w, r)
+		} else if r.Method == "PATCH" {
+			rc.log.Println("Patch method called on", r.URL)
+			rc.controller.Patch(w, r)
+		} else if r.Method == "DELETE" {
+			rc.log.Println("Delete method called on", r.URL)
+			rc.controller.Delete(w, r)*/
 	} else {
 		w.WriteHeader(405)
 	}

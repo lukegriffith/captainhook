@@ -30,13 +30,13 @@ func (r *Rule) Execute(iw io.Writer, dataMap map[string]interface{}) error {
 // Sets the function pointer of the rule.
 func (r *Rule) SetFunction(f func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error) error {
 
-		if r.function != nil {
-			return errors.New("Function already exists.")
-		}
+	if r.function != nil {
+		return errors.New("Function already exists.")
+	}
 
-		r.function = f
+	r.function = f
 
-		return nil
+	return nil
 }
 
 // TODO make this mapping more configurable.
