@@ -14,6 +14,9 @@ Webhook event bridge and transformer.
 - [ ] Increase on unit testing.
 - [ ] implement integration tests.
 - [ ] Authentication 
+    - [ ] Github Authenticaton
+    - [ ] Ability to decrypt blob from disk to load secrets. 
+    - [ ] generic header auth setup. 
 - [ ] Brainstorm new destinations (Protocols, services) and create list of future enhancements. 
 - [ ] Documentation on using & developing.
 
