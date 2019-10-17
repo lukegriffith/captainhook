@@ -1,6 +1,6 @@
 # CaptainHook
 
-Webhook event bridge and transformer. 
+Protocol hook event bridge and transformer. 
 
 ## Docs
  
