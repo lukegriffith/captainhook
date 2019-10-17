@@ -25,8 +25,8 @@ type (
 
 	// Contains information on the type of source expected in an endpoint.
 	Source struct {
-		SourceType string `yaml:"sourcetype"`
-		Location   string `yaml:"location"`
+		Type      string `yaml:"type"`
+		Arguments string `yaml:"arguments"`
 	}
 )
 
