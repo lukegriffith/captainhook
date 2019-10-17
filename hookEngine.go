@@ -80,11 +80,10 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		h.log.Println("unable to unmarshal json")
 	}
 
-
 	var secretMap map[string]string = make(map[string]string)
 
 	for _, secret := range endpoint.Secrets {
-		v, err  := h.secretEng.GetTextSecret(secret)
+		v, err := h.secretEng.GetTextSecret(secret)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -95,7 +94,6 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		secretMap[secret] = v
 	}
 
-
 	dataBag["_secrets"] = secretMap
 
 	var request bytes.Buffer
@@ -103,7 +101,6 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	for _, r := range rules {
 
 		AssignFunction(&r)
-
 
 		err = r.Execute(&request, dataBag)
 

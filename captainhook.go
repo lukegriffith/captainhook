@@ -8,7 +8,7 @@ type (
 	// and sources.
 	Endpoint struct {
 		Name    string   `yaml:"name"`
-		Secrets []string   `yaml:"secrets"`
+		Secrets []string `yaml:"secrets"`
 		Rules   []Rule   `yaml:"rules"`
 		Sources []Source `yaml:"sources"`
 	}
@@ -25,7 +25,7 @@ type (
 
 	// Contains information on the type of source expected in an endpoint.
 	Source struct {
-		Type      string `yaml:"type"`
+		Type      string            `yaml:"type"`
 		Arguments map[string]string `yaml:"arguments"`
 	}
 

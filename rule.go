@@ -14,7 +14,7 @@ type Rule struct {
 	Type        string            `yaml:type`
 	Destination string            `yaml:destination`
 	Arguments   map[string]string `yaml:arguments`
-	Secrets		[]string 		  `yaml:secrets`
+	Secrets     []string          `yaml:secrets`
 	function    func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error
 }
 
@@ -64,18 +64,15 @@ func (rule Rule) GetArg(name string) (string, error) {
 	return val, nil
 }
 
-
 // RULE FUNCTIONS.
 // Rules are passed a io.Writer, what wil be used in the POST request to downstream services.
 // dataMaps are arguments of the executing rule, passed in from the configuration or input.
 // secrets map is passed in.
 
-
 // NoOp, do nothing.
 func NoOp(iw io.Writer, dataMap map[string]interface{}, rule *Rule) error {
 	return nil
 }
-
 
 // Uses go templating to create a new json string from the input recieved.
 func TemplateFunc(iw io.Writer, dataMap map[string]interface{}, rule *Rule) error {
