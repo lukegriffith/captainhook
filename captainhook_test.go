@@ -17,7 +17,7 @@ func TestEndpoint(t *testing.T) {
 	args["template"] = "{{.test}}"
 
 	r = append(r, Rule{"template", "testURL", args, nil, TemplateFunc})
-	s = append(s, Source{"Github", "Test"})
+	s = append(s, Source{"Github", args})
 
 	secrets := []string{"test", "test1"}
 

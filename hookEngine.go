@@ -11,19 +11,21 @@ import (
 	"net/url"
 )
 
-//TODO: Document
+// Structure is responsible to processing incoming requests against configured endpoints.
 type HookEngine struct {
 	log         *log.Logger
 	endpointSvc EndpointService
 	secretEng   SecretEngine
 }
 
-//TODO: Document
+// Constructor requires endpoint and secret engine.
 func NewHookEngine(log *log.Logger, ec EndpointService, sec SecretEngine) *HookEngine {
 	return &HookEngine{log, ec, sec}
 }
 
-//TODO: Document
+// Main routine that processes recieved hooks, obtaining endpoints and processing rules.
+// Various error checking and validation happens at this stage, i.e mapping required secrets to
+// dataBag. Databag is a map of input parameters passed to each rules function.
 func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	var name string
@@ -85,8 +87,8 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		v, err  := h.secretEng.GetTextSecret(secret)
 
 		if err != nil {
-			h.log.Fatal("unable to get secret from engine", secret)
 			w.WriteHeader(http.StatusInternalServerError)
+			h.log.Println("unable to get secret from engine", secret)
 			return
 		}
 
