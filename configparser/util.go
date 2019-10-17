@@ -4,9 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
-	"log"
 	"os"
 )
 
@@ -43,32 +41,4 @@ func load(path string) ([]byte, error) {
 	return nil, nil
 }
 
-// Loads configuration from a byte array performing validation.
-func loadConfig(data []byte) (*Config, error) {
 
-	c := Config{nil, ""}
-	err := yaml.Unmarshal(data, &c)
-
-	log.Println(string(data))
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &c, nil
-}
-
-func loadSecrets(data []byte) (map[string]string, error) {
-
-	s := make(map[string]string)
-	err := yaml.Unmarshal(data, &s)
-
-	log.Println(string(data))
-
-	if err != nil {
-		return nil, errors.New("unable to load secrets from path provided")
-	}
-
-	return s, nil
-
-}

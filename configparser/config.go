@@ -60,6 +60,21 @@ func (c *Config) setEndpoint(e []captainhook.Endpoint) {
 	c.Endpoints = e
 }
 
+// Loads configuration from a byte array performing validation.
+func loadConfig(data []byte) (*Config, error) {
+
+	c := Config{nil, ""}
+	err := yaml.Unmarshal(data, &c)
+
+	log.Println(string(data))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &c, nil
+}
+
 
 // Constructor.
 func NewConfig(path string) (*EndpointService, error) {

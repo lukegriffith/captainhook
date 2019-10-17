@@ -5,7 +5,7 @@ Protocol hook event bridge and transformer.
 ## Docs
  
 - [Chaining](docs/chaining.md)
-
+- [DataMap & Secrets](docs/DataMap.md)
 
 ## TODO
 
