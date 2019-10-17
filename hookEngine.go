@@ -82,8 +82,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	for _, r := range rules {
 
 		AssignFunction(&r)
-
-		err := r.Function(&request, dataBag, &r)
+		err := r.Execute(&request, dataBag)
 
 		if err != nil {
 			h.log.Println(r, "failed to execute template.", err)

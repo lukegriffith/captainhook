@@ -31,7 +31,7 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 		obj, err := e.service.Endpoint(name)
 
 		if err != nil {
-			// TODO: Log
+			e.log.Print("Cannot find endpoint", name, "no content.")
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
@@ -39,26 +39,30 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 		json, err := json.Marshal(obj)
 
 		if err != nil {
-			// TODO: Log
+			e.log.Print("json error", err)
+			e.log.Print("Unable to marshal endpoint", name, "to json.")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
 		w.WriteHeader(http.StatusOK)
 		w.Write(json)
+		return
 	} else {
 
 		obj, err := e.service.Endpoints()
 
 		if err != nil {
-			// TODO: Log
+			e.log.Print("Unable to get all endpoints.")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
+		e.log.Print(obj)
+
 		json, err := json.Marshal(obj)
 		if err != nil {
-			// TODO: Log
+			e.log.Print("Unable to marshal endpoints to json.")
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
