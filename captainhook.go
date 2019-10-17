@@ -4,11 +4,11 @@ import "errors"
 
 type (
 
-	// Datastructure contains information on an Endpoint, with associated rules
+	// Data structure contains information on an Endpoint, with associated rules
 	// and sources.
 	Endpoint struct {
 		Name    string   `yaml:"name"`
-		Secret  string   `yaml:"secret"`
+		Secrets []string   `yaml:"secrets"`
 		Rules   []Rule   `yaml:"rules"`
 		Sources []Source `yaml:"sources"`
 	}
@@ -26,7 +26,11 @@ type (
 	// Contains information on the type of source expected in an endpoint.
 	Source struct {
 		Type      string `yaml:"type"`
-		Arguments string `yaml:"arguments"`
+		Arguments map[string]string `yaml:"arguments"`
+	}
+
+	SecretEngine interface {
+		GetTextSecret(name string) (string, error)
 	}
 )
 

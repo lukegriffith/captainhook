@@ -15,11 +15,12 @@ import (
 type HookEngine struct {
 	log         *log.Logger
 	endpointSvc EndpointService
+	secretEng   SecretEngine
 }
 
 //TODO: Document
-func NewHookEngine(log *log.Logger, ec *EndpointService) *HookEngine {
-	return &HookEngine{log, *ec}
+func NewHookEngine(log *log.Logger, ec EndpointService, sec SecretEngine) *HookEngine {
+	return &HookEngine{log, ec, sec}
 }
 
 //TODO: Document
@@ -77,12 +78,32 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		h.log.Println("unable to unmarshal json")
 	}
 
+
+	var secretMap map[string]string = make(map[string]string)
+
+	for _, secret := range endpoint.Secrets {
+		v, err  := h.secretEng.GetTextSecret(secret)
+
+		if err != nil {
+			h.log.Fatal("unable to get secret from engine", secret)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		secretMap[secret] = v
+	}
+
+
+	dataBag["_secrets"] = secretMap
+
 	var request bytes.Buffer
 
 	for _, r := range rules {
 
 		AssignFunction(&r)
-		err := r.Execute(&request, dataBag)
+
+
+		err = r.Execute(&request, dataBag)
 
 		if err != nil {
 			h.log.Println(r, "failed to execute template.", err)

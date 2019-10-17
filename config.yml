@@ -1,6 +1,7 @@
 endpoints:
   - name: test
-    secret: test
+    secrets:
+      - test
     rules:
       - type: template
         destination: http://localhost:8081/webhook/hooks
@@ -8,10 +9,18 @@ endpoints:
           template: |
             { "test" : "{{ .test }}" }
   - name: hooks
-    secret: supersecret
+    secrets:
+      - hookSecret
+    sources:
+      - type: github
+        arguments:
+          secret: hookSecret
+      - type: generic
+        arguments:
+          token: hookSecret
     rules:
       - type: template
         destination: http://localhost:8082
         arguments:
           template: |
-            { "hook_executed": "{{ .test }}" }
+            { "hook_executed": "{{ .test }}", "hook_secret": "{{ ._secrets.hookSecret }}" }

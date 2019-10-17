@@ -1,13 +1,10 @@
 package configparser
 
 import (
-	"bufio"
 	"errors"
 	"github.com/lukemgriffith/captainhook"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"log"
-	"os"
 )
 
 // Structure contains the whole configuration when using the config parser
@@ -23,9 +20,24 @@ func (c *Config) GetEndpoints() []captainhook.Endpoint {
 }
 
 // Public method to reloads configuration from disk via specified path.
-func (c *Config) Reload() {
+func (c *Config) Reload() error {
 	log.Println("loading", c.path)
-	c.reload(c.path)
+	b, err := load(c.path)
+
+	if err != nil {
+		return err
+	}
+
+	config, err := loadConfig(b)
+
+	if err != nil {
+		return err
+	}
+
+	c.setEndpoint(config.GetEndpoints())
+
+	return nil
+
 }
 
 // Dumps YAML Readable configuration to application log for debugging
@@ -48,67 +60,19 @@ func (c *Config) setEndpoint(e []captainhook.Endpoint) {
 	c.Endpoints = e
 }
 
-// reloads the configuration from the provided path.
-func (c *Config) reload(path string) {
-
-	finfo, err := os.Stat(path)
-	if err != nil {
-		log.Fatal("Unable to determine file information", path)
-	}
-
-	switch mode := finfo.Mode(); {
-	case mode.IsDir():
-		log.Fatal("Unable to load configuration from directory.")
-	case mode.IsRegular():
-		file, err := os.Open(path)
-
-		if err != nil {
-			log.Fatal("Unable to open file", path)
-		}
-
-		reader := bufio.NewReader(file)
-
-		data, err := ioutil.ReadAll(reader)
-
-		if err != nil {
-			log.Fatal("Unable to read file", path)
-		}
-
-		loadedConfig, err := loadConfig(data)
-
-		if err != nil {
-			log.Fatal(err, path)
-		}
-
-		c.setEndpoint((loadedConfig.GetEndpoints()))
-	}
-}
-
-// Loads configuration from a byte array performing validation.
-func loadConfig(data []byte) (*Config, error) {
-
-	c := Config{nil, ""}
-	err := yaml.Unmarshal(data, &c)
-
-	log.Println(string(data))
-
-	if err != nil {
-		return nil, errors.New("Unable to load config from data.")
-	}
-
-	log.Println(c)
-
-	return &c, nil
-}
 
 // Constructor.
-func NewConfig(path string) (*Config, *EndpointService) {
+func NewConfig(path string) (*EndpointService, error) {
 
 	e := make([]captainhook.Endpoint, 1)
 
 	c := &Config{e, path}
 
-	c.Reload()
+	err := c.Reload()
 
-	return c, &EndpointService{c}
+	if err != nil {
+		return nil, err
+	}
+
+	return &EndpointService{c}, nil
 }
