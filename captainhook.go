@@ -34,7 +34,7 @@ type (
 	}
 )
 
-// Obtains the assocaited rules for an endpoint.
+// Obtains the associated rules for an endpoint.
 func (e *Endpoint) GetRules() ([]Rule, error) {
 
 	if e.Rules == nil {
