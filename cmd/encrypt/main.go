@@ -1,75 +1,61 @@
 package main
 
-// https://www.thepolyglotdeveloper.com/2018/02/encrypt-decrypt-data-golang-application-crypto-packages/
-
 import (
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/md5"
-	"crypto/rand"
-	"encoding/hex"
-	"fmt"
-	"io"
+	"flag"
 	"io/ioutil"
 	"os"
+
+	"github.com/lukemgriffith/captainhook/configparser"
 )
 
-func createHash(key string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(key))
-	return hex.EncodeToString(hasher.Sum(nil))
-}
-
-func encrypt(data []byte, passphrase string) []byte {
-	block, _ := aes.NewCipher([]byte(createHash(passphrase)))
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
-	nonce := make([]byte, gcm.NonceSize())
-	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err.Error())
-	}
-	ciphertext := gcm.Seal(nonce, nonce, data, nil)
-	return ciphertext
-}
-
-func decrypt(data []byte, passphrase string) []byte {
-	key := []byte(createHash(passphrase))
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
-	}
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
-	nonceSize := gcm.NonceSize()
-	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
-	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err.Error())
-	}
-	return plaintext
-}
-
-func encryptFile(filename string, data []byte, passphrase string) {
-	f, _ := os.Create(filename)
-	defer f.Close()
-	f.Write(encrypt(data, passphrase))
-}
-
-func decryptFile(filename string, passphrase string) []byte {
-	data, _ := ioutil.ReadFile(filename)
-	return decrypt(data, passphrase)
-}
-
 func main() {
-	fmt.Println("Starting the application...")
-	ciphertext := encrypt([]byte("Hello World"), "password")
-	fmt.Printf("Encrypted: %x\n", ciphertext)
-	plaintext := decrypt(ciphertext, "password")
-	fmt.Printf("Decrypted: %s\n", plaintext)
-	encryptFile("sample.txt", []byte("Hello World"), "password1")
-	fmt.Println(string(decryptFile("sample.txt", "password1")))
+
+	var passphrase string
+	var filepath string
+	var decrypt bool
+
+	flag.StringVar(&passphrase, "passphrase", "", "passphrase to encrypt data with")
+	flag.StringVar(&filepath, "filepath", "", "path to file to encrypt")
+	flag.BoolVar(&decrypt, "decrypt", false, "should the file be decrypted")
+
+	flag.Parse()
+
+	if passphrase == "" || filepath == "" {
+		flag.Usage()
+		os.Exit(0)
+	}
+
+	key := configparser.NewAsymmetricKey(passphrase)
+
+	file, err := os.Open(filepath)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	data, err := ioutil.ReadAll(file)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if decrypt {
+		text := key.Decrypt(data)
+
+		err = ioutil.WriteFile(filepath, text, 0777)
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+	} else {
+		ciphertext := key.Encrypt(data)
+
+		err = ioutil.WriteFile(filepath, ciphertext, 0777)
+
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
 }
