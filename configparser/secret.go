@@ -74,19 +74,19 @@ func (s *SecretsEndpoint) GetTextSecret(name string) (string, error) {
 
 // Utility functions
 
-type asymmetricKey struct {
+type AsymmetricKey struct {
 	key string
 }
 
-// NewAsymmetricKey gcreates an object to deal with aes encryption from provided passphrase
-func NewAsymmetricKey(key string) *asymmetricKey {
+// NewAsymmetricKey creates an object to deal with aes encryption from provided passphrase
+func NewAsymmetricKey(key string) *AsymmetricKey {
 	hasher := md5.New()
 	hasher.Write([]byte(key))
 
-	return &asymmetricKey{hex.EncodeToString(hasher.Sum(nil))}
+	return &AsymmetricKey{hex.EncodeToString(hasher.Sum(nil))}
 }
 
-func (k *asymmetricKey) Decrypt(data []byte) []byte {
+func (k *AsymmetricKey) Decrypt(data []byte) []byte {
 
 	block, err := aes.NewCipher([]byte(k.key))
 	if err != nil {
@@ -109,7 +109,7 @@ func (k *asymmetricKey) Decrypt(data []byte) []byte {
 	return plaintext
 }
 
-func (k *asymmetricKey) Encrypt(data []byte) []byte {
+func (k *AsymmetricKey) Encrypt(data []byte) []byte {
 	block, _ := aes.NewCipher([]byte(k.key))
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
