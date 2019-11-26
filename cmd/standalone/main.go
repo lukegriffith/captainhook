@@ -44,7 +44,7 @@ func main() {
 			_, err := secEng.GetTextSecret(name)
 
 			if err != nil {
-				panic(fmt.Sprintf("unable to find secret %s", name))
+				panic(fmt.Sprintf("unable to find secret %s in endpoint %s", name, end.Name))
 			}
 		}
 	}
@@ -63,9 +63,13 @@ func main() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
 	_ = <-c
-	log.Print("os signal recieved processing.")
+	log.Print("os signal received processing.")
 
 	log.Print("shutting server down gracefully.")
-	hookserver.Shutdown(context.Background())
+	err = hookserver.Shutdown(context.Background())
+
+	if err != nil {
+		panic(err)
+	}
 
 }
