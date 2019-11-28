@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"github.com/lukemgriffith/captainhook"
 	"github.com/lukemgriffith/captainhook/configparser"
 	"github.com/lukemgriffith/captainhook/server"
@@ -40,15 +39,10 @@ func main() {
 	}
 
 	if secEnd != nil {
-		// Validating all configured secrets are available.
-		for _, end := range endpoints {
-			for _, name := range end.Secrets {
-				_, err := secEnd.GetTextSecret(name)
+		err := secEnd.ValidateEndpointConfig(endpoints)
 
-					if err != nil {
-					panic(fmt.Sprintf("unable to find secret %s", name))
-				}
-			}
+		if err != nil {
+			panic(err.Error())
 		}
 	}
 

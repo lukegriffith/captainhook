@@ -31,6 +31,7 @@ type (
 
 	SecretEngine interface {
 		GetTextSecret(name string) (string, error)
+		ValidateEndpointConfig(endpoints []Endpoint) error
 	}
 )
 

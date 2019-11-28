@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/lukemgriffith/captainhook"
 	"io"
 	"log"
 
@@ -44,10 +45,10 @@ func NewSecretEngine(path string, secret string) (*SecretsEndpoint, error) {
 }
 
 // creates secrets structure from byte array.
-func loadSecrets(ciphertext []byte, passphrase string) (map[string]string, error) {
+func loadSecrets(cipherText []byte, passphrase string) (map[string]string, error) {
 
 	k := NewAsymmetricKey(passphrase)
-	data := k.Decrypt(ciphertext)
+	data := k.Decrypt(cipherText)
 	s := make(map[string]string)
 	err := yaml.Unmarshal(data, &s)
 
@@ -60,7 +61,7 @@ func loadSecrets(ciphertext []byte, passphrase string) (map[string]string, error
 	return s, nil
 }
 
-// interface function, obtains text secret from map.
+// Obtains text secret from map.
 func (s *SecretsEndpoint) GetTextSecret(name string) (string, error) {
 
 	v, ok := s.data[name]
@@ -72,8 +73,31 @@ func (s *SecretsEndpoint) GetTextSecret(name string) (string, error) {
 	return v, nil
 }
 
-// Utility functions
+// Validating all configured secrets are available.
+func (s *SecretsEndpoint) ValidateEndpointConfig(endpoints []captainhook.Endpoint) error {
 
+	var errorsFound = false
+	var missingSecrets []string
+
+	for _, end := range endpoints {
+		for _, name := range end.Secrets {
+			_, err := s.GetTextSecret(name)
+			if err != nil {
+				errorsFound = true
+				missingSecrets = append(missingSecrets, name)
+
+			}
+		}
+	}
+
+	if errorsFound {
+		return errors.New(fmt.Sprintf("unable to find secret %q", missingSecrets))
+	}
+
+	return nil
+}
+
+// Struct contains hashed key for encryption / decryption
 type AsymmetricKey struct {
 	key string
 }
@@ -86,6 +110,7 @@ func NewAsymmetricKey(key string) *AsymmetricKey {
 	return &AsymmetricKey{hex.EncodeToString(hasher.Sum(nil))}
 }
 
+// Decrypts provided data using key.
 func (k *AsymmetricKey) Decrypt(data []byte) []byte {
 
 	block, err := aes.NewCipher([]byte(k.key))
@@ -99,8 +124,8 @@ func (k *AsymmetricKey) Decrypt(data []byte) []byte {
 	}
 
 	nonceSize := gcm.NonceSize()
-	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
-	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
+	nonce, cipherText := data[:nonceSize], data[nonceSize:]
+	plaintext, err := gcm.Open(nil, nonce, cipherText, nil)
 
 	if err != nil {
 		panic(err.Error())
@@ -109,6 +134,7 @@ func (k *AsymmetricKey) Decrypt(data []byte) []byte {
 	return plaintext
 }
 
+// Encrypts provided data using key.
 func (k *AsymmetricKey) Encrypt(data []byte) []byte {
 	block, _ := aes.NewCipher([]byte(k.key))
 	gcm, err := cipher.NewGCM(block)
@@ -119,6 +145,6 @@ func (k *AsymmetricKey) Encrypt(data []byte) []byte {
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
 		panic(err.Error())
 	}
-	ciphertext := gcm.Seal(nonce, nonce, data, nil)
-	return ciphertext
+	cipherText := gcm.Seal(nonce, nonce, data, nil)
+	return cipherText
 }

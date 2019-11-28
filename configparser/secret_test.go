@@ -1,6 +1,7 @@
 package configparser
 
 import (
+	"github.com/lukemgriffith/captainhook"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -94,4 +95,47 @@ func TestLoadFromFile(t *testing.T) {
 		t.Log(err.Error())
 		t.FailNow()
 	}
+}
+
+
+func TestValidation(t *testing.T) {
+
+
+	k := NewAsymmetricKey(passphrase)
+	plaindata := []byte(testData)
+	ciphertext := k.Encrypt(plaindata)
+
+	secrets, err := loadSecrets(ciphertext, passphrase)
+
+	if err != nil {
+		t.Log(err.Error())
+		t.FailNow()
+	}
+
+	secEnd := &SecretsEndpoint{secrets}
+
+	validEndpoint := captainhook.Endpoint{"TestEnd", []string{"testKey"}, nil, nil}
+	invalidEndpoint := captainhook.Endpoint{"TestEnd", []string{"testKey", "fakeKey"}, nil, nil}
+
+	var endpoints []captainhook.Endpoint
+
+	endpoints = append(endpoints, validEndpoint)
+
+	err = secEnd.ValidateEndpointConfig(endpoints)
+
+	if err != nil {
+		t.Log("validEndpoint threw validation error on SecEnd")
+		t.FailNow()
+	}
+
+	endpoints = append(endpoints, invalidEndpoint)
+
+	err = secEnd.ValidateEndpointConfig(endpoints)
+
+	if err == nil {
+		t.Log("invalid endpoint did not throw a validation error")
+		t.FailNow()
+	}
+
+
 }
