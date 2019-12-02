@@ -24,17 +24,20 @@ func NewHookEngine(log *log.Logger, ec EndpointService, sec SecretEngine) *HookE
 	return &HookEngine{log, ec, sec}
 }
 
-// Main routine that processes recieved hooks, obtaining endpoints and processing rules.
+// Main routine that processes received hooks, obtaining endpoints and processing rules.
 // Various error checking and validation happens at this stage, i.e mapping required secrets to
-// dataBag. Databag is a map of input parameters passed to each rules function.
+// dataBag. data bag is a map of input parameters passed to each rules function.
 func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
+	var secretMap map[string]string = make(map[string]string)
+	var endpoint *Endpoint
 	var name string
 	var ok bool
 
 	// Extract variables from request.
 	vars := mux.Vars(r)
 
+	// Validate ID is provided.
 	if name, ok = vars["id"]; !ok {
 		w.WriteHeader(http.StatusNotFound)
 		h.log.Println("no id provided.")
@@ -42,12 +45,9 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	}
 	h.log.Println("processing webhook:", name)
 
-	var endpoint *Endpoint
 
-
-
+	// Get endpoint by identifier.
 	endpoint, err := h.endpointSvc.Endpoint(name)
-
 
 	if err != nil {
 		h.log.Println("error getting endpoint", name)
@@ -56,10 +56,8 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	}
 
 
-
+	// Read body and create data bag string map
 	b, err := ioutil.ReadAll(r.Body)
-
-
 
 	if err != nil {
 		h.log.Println("unable to get body from request")
@@ -81,8 +79,7 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		h.log.Println("unable to unmarshal json")
 	}
 
-	var secretMap map[string]string = make(map[string]string)
-
+	// Attach secrets to secrets map/
 	for _, secret := range endpoint.Secrets {
 		v, err := h.secretEng.GetTextSecret(secret)
 
@@ -95,15 +92,12 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		secretMap[secret] = v
 	}
 
+	// Store secrets on data bag.
 	dataBag["_secrets"] = secretMap
-
-
 	h.executeEndpoint(endpoint, r, w, &dataBag)
-
-
 }
 
-// Executes all endpoint rules, returns bool to determine if
+// Executes endpoint rules, returns data to caller on rules specified with echo.
 func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.ResponseWriter,  dataBag *map[string]interface{})  {
 
 	var request bytes.Buffer
@@ -145,6 +139,7 @@ func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.Respon
 		request.Reset()
 	}
 
+	// Reply with rules that have been echoed
 	if len(echoStrings) > 0 {
 		w.WriteHeader(http.StatusOK)
 		_, err = w.Write([]byte(strings.Join(echoStrings[:], "\n")))
@@ -155,6 +150,4 @@ func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.Respon
 	} else {
 		w.WriteHeader(http.StatusNoContent)
 	}
-
-
 }
