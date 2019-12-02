@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/lukemgriffith/captainhook"
+	"github.com/lukemgriffith/captainhook/util"
 	"log"
 	"net/http"
 )
@@ -16,7 +17,7 @@ type EndpointController struct {
 
 //TODO: Document
 func NewEndpointController(es captainhook.EndpointService) *EndpointController {
-	log := NewLog("EndpointController ")
+	log := util.NewLog("EndpointController ")
 	return &EndpointController{es, log}
 }
 

@@ -19,7 +19,7 @@ endpoints:
         arguments:
           token: hookSecret
     rules:
-      - type: template
+      - type: display
         destination: http://localhost:8082
         arguments:
           template: |

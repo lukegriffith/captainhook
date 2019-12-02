@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/lukemgriffith/captainhook/util"
 	"log"
 	"net/http"
 )
@@ -24,7 +25,7 @@ type RestController struct {
 //TODO: Document
 // DO WE NEED TO REMOVE THIS???
 func NewRestController(c Controller) RestController {
-	log := NewLog("RestController ")
+	log := util.NewLog("RestController ")
 	return RestController{log, c}
 }
 

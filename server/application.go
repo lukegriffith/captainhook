@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gorilla/mux"
 	"github.com/lukemgriffith/captainhook"
+	"github.com/lukemgriffith/captainhook/util"
 	"log"
 	"net/http"
 )
@@ -10,7 +11,7 @@ import (
 //TODO: Document
 func New(endpoints captainhook.EndpointService, secrets captainhook.SecretEngine) http.Handler {
 
-	log := NewLog("CaptainHook ")
+	log := util.NewLog("CaptainHook ")
 	mux := mux.NewRouter()
 	fs := http.FileServer(http.Dir("static"))
 	AppServer := &AppServer{mux, log}

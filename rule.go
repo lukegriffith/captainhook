@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/lukemgriffith/captainhook/util"
 	"html/template"
 	"io"
 )
@@ -46,6 +47,8 @@ func AssignFunction(rule *Rule) {
 	switch t := rule.Type; t {
 	case "template":
 		rule.SetFunction(TemplateFunc)
+	case "display":
+		rule.SetFunction(DisplayFunc)
 
 	default:
 		rule.SetFunction(NoOp)
@@ -105,4 +108,17 @@ func TemplateFunc(iw io.Writer, dataMap map[string]interface{}, rule *Rule) erro
 	}
 
 	return nil
+}
+
+func DisplayFunc(iw io.Writer, dataMap map[string]interface{}, rule *Rule) error {
+
+	err := TemplateFunc(iw, dataMap, rule)
+	if err != nil {
+		return err
+	}
+	displayLog := util.NewLog(rule.Type)
+	displayLog.Println(iw)
+
+	return nil
+
 }
