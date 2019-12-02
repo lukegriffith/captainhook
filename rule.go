@@ -16,6 +16,7 @@ type Rule struct {
 	Destination string            `yaml:destination`
 	Arguments   map[string]string `yaml:arguments`
 	Secrets     []string          `yaml:secrets`
+	Echo		bool			  `yaml:echo`
 	function    func(iw io.Writer, dataMap map[string]interface{}, r *Rule) error
 }
 

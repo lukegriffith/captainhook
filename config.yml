@@ -20,7 +20,7 @@ endpoints:
           token: hookSecret
     rules:
       - type: display
-        destination: http://localhost:8082
+        echo: yes
         arguments:
           template: |
             { "hook_executed": "{{ .test }}", "hook_secret": "{{ ._secrets.hookSecret }}" }

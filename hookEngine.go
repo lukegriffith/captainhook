@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // Structure is responsible to processing incoming requests against configured endpoints.
@@ -99,12 +100,14 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	h.executeEndpoint(endpoint, r, w, &dataBag)
 
-	w.WriteHeader(http.StatusNoContent)
+
 }
 
+// Executes all endpoint rules, returns bool to determine if
 func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.ResponseWriter,  dataBag *map[string]interface{})  {
 
 	var request bytes.Buffer
+	var echoStrings []string
 
 	rules, err := e.GetRules()
 
@@ -124,13 +127,34 @@ func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.Respon
 			continue
 		}
 		h.log.Println("rendered template: ", request.String())
-		h.log.Println("forwarding to", r.Destination)
 
-		_, err = http.Post(r.Destination, "application/json", &request)
 
-		if err != nil {
-			h.log.Println("post request to", r.Destination, "failed.")
+		if r.Destination != "" {
+
+			h.log.Println("forwarding to", r.Destination)
+			_, err = http.Post(r.Destination, "application/json", &request)
+
+			if err != nil {
+				h.log.Println("post request to", r.Destination, "failed.")
+			}
+		}
+
+		if r.Echo {
+			echoStrings = append(echoStrings, request.String())
 		}
 		request.Reset()
 	}
+
+	if len(echoStrings) > 0 {
+		w.WriteHeader(http.StatusOK)
+		_, err = w.Write([]byte(strings.Join(echoStrings[:], "\n")))
+
+		if err != nil {
+			h.log.Println("Unable to echo reply.")
+		}
+	} else {
+		w.WriteHeader(http.StatusNoContent)
+	}
+
+
 }
