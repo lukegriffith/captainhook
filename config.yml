@@ -14,10 +14,10 @@ endpoints:
     sources:
       - type: github
         arguments:
-          secret: hookSecret
+          secret: hookToken
       - type: generic
         arguments:
-          token: hookSecret
+          token: hookToken
     rules:
       - type: display
         echo: yes
