@@ -15,7 +15,7 @@ Protocol hook event bridge and transformer.
 - [ ] implement integration tests.
 - [ ] Authentication 
     - [ ] Github Authenticaton
-    - [ ] Ability to decrypt blob from disk to load secrets. 
+    - [X] Ability to decrypt blob from disk to load secrets. 
     - [ ] generic header auth setup. 
 - [ ] Brainstorm new destinations (Protocols, services) and create list of future enhancements. 
 - [ ] Documentation on using & developing.

@@ -43,7 +43,10 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	var endpoint *Endpoint
 
+
+
 	endpoint, err := h.endpointSvc.Endpoint(name)
+
 
 	if err != nil {
 		h.log.Println("error getting endpoint", name)
@@ -51,7 +54,11 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
+
 	b, err := ioutil.ReadAll(r.Body)
+
+
 
 	if err != nil {
 		h.log.Println("unable to get body from request")
@@ -64,13 +71,6 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		h.log.Fatal("unable to URL decode body")
-	}
-
-	rules, err := endpoint.GetRules()
-
-	if err != nil {
-		h.log.Println("unable to enumerate rules, endpoint", endpoint.Name)
-		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	dataBag := make(map[string]interface{})
@@ -96,13 +96,28 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	dataBag["_secrets"] = secretMap
 
+
+	h.executeEndpoint(endpoint, r, w, &dataBag)
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.ResponseWriter,  dataBag *map[string]interface{})  {
+
 	var request bytes.Buffer
+
+	rules, err := e.GetRules()
+
+	if err != nil {
+		h.log.Println("unable to enumerate rules, endpoint", e.Name)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 
 	for _, r := range rules {
 
 		AssignFunction(&r)
 
-		err = r.Execute(&request, dataBag)
+		err = r.Execute(&request, *dataBag)
 
 		if err != nil {
 			h.log.Println(r, "failed to execute template.", err)
@@ -118,6 +133,4 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		}
 		request.Reset()
 	}
-
-	w.WriteHeader(http.StatusNoContent)
 }
