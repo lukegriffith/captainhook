@@ -9,6 +9,11 @@ Protocol hook event bridge and transformer.
 
 ## TODO
 
+### Needed
+
+- [ ] Template function multiply number by 10
+
+### Nice to have 
 - [ ] Improve failure logging & logging in general. (I.E when template post fails at dest, 
     when datamap is access where property doesn't exist). 
 - [ ] Increase on unit testing.

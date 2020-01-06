@@ -1,0 +1,25 @@
+endpoints:
+  - name: Monzo2Ynab
+    secrets:
+      - ynabToken
+      - budgetID
+    sources:
+      - type: generic
+        arguments:
+          token: hookToken
+    rules:
+      - type: template
+        destination: https://api.youneedabudget.com/v1/budgets/{{._secrets.budgetID}}/transactions
+        arguments:
+          template: |
+            {
+              "account_id": "{{ ._secrets.budgetID }}",
+              "date": "{{ .date.created }}",
+              "amount": "{{ multiply .data.amount 10 }}",
+              "memo": "{{ .data.category }} : {{ .data.description }}",
+              {{if .data.merchant}}
+              "payee_name": "{{ .data.merchant }}"
+              {{else}}
+              "payee_name": none
+              {{end}}
+            }
