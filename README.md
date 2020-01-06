@@ -11,7 +11,7 @@ Protocol hook event bridge and transformer.
 
 ### Needed
 
-- [ ] Template function multiply number by 10
+- [*] Template function multiply number by 10
 
 ### Nice to have 
 - [ ] Improve failure logging & logging in general. (I.E when template post fails at dest, 

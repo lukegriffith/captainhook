@@ -3,11 +3,18 @@ endpoints:
     secrets:
       - test
     rules:
-      - type: template
-        destination: http://localhost:8081/webhook/hooks
+      - type: display
+        echo: yes
+        #destination: http://localhost:8081/webhook/hooks
         arguments:
           template: |
-            { "test" : "{{ .test }}" }
+            {
+              "test" : {{ multiply .test 10 }},
+              "nestedData" : {{ .nestedData.innerTest }},
+              "array":  {{ index .array 0 }}
+            }
+
+
   - name: hooks
     secrets:
       - hookSecret
@@ -24,6 +31,9 @@ endpoints:
         arguments:
           template: |
             { "hook_executed": "{{ .test }}", "hook_secret": "{{ ._secrets.hookSecret }}" }
+
+
+
   - name: Monzo2Ynab
     secrets:
       - ynabToken

@@ -87,7 +87,12 @@ func TemplateFunc(iw io.Writer, dataMap map[string]interface{}, rule *Rule) erro
 		return err
 	}
 
-	tmpl, err := template.New("tmpl").Parse(tmplStr)
+	tmpl, err := template.New("tmpl").Funcs(template.FuncMap{
+		"multiply": func(x float64, y float64) float64 {
+
+			return x * y
+		},
+	}).Parse(tmplStr)
 
 	if err != nil {
 		return err
