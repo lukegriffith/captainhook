@@ -43,14 +43,15 @@ endpoints:
         arguments:
           token: hookToken
     rules:
-      - type: template
-        destination: https://api.youneedabudget.com/v1/budgets/<ID>/transactions
+      - type: display
+        #destination: https://api.youneedabudget.com/v1/budgets/<ID>/transactions
+        echo: yes
         arguments:
           template: |
             {
               "account_id": "{{ ._secrets.budgetID }}",
-              "date": "{{ .date.created }}",
-              "amount": "{{ multiply .data.amount 10 }}",
+              "date": "{{ .data.created }}",
+              "amount": {{ multiply .data.amount 10 }},
               "memo": "{{ .data.category }} : {{ .data.description }}",
-              payee_name: "{{ .data.merchant }}"
+              "payee_name": "{{ .data.merchant.name }}"
             }
