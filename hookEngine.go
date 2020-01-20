@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"text/template"
 )
 
 // Structure is responsible to processing incoming requests against configured endpoints.
@@ -29,7 +30,8 @@ func NewHookEngine(log *log.Logger, ec EndpointService, sec SecretEngine) *HookE
 // dataBag. data bag is a map of input parameters passed to each rules function.
 func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
-	var secretMap map[string]string = make(map[string]string)
+	var dataBag = make(map[string]interface{})
+	var secretMap = make(map[string]string)
 	var endpoint *Endpoint
 	var name string
 	var ok bool
@@ -72,7 +74,6 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		h.log.Fatal("unable to URL decode body")
 	}
 
-	dataBag := make(map[string]interface{})
 	err = json.Unmarshal([]byte(decodedBody), &dataBag)
 
 	if err != nil {
@@ -125,8 +126,15 @@ func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.Respon
 
 		if r.Destination != "" {
 
+			client := &http.Client{}
+
 			h.log.Println("forwarding to", r.Destination)
-			_, err = http.Post(r.Destination, "application/json", &request)
+
+			req, err := http.NewRequest("POST", r.Destination, &request)
+
+			h.addHeaders(&req.Header, r.Headers, dataBag)
+
+			client.Do(req)
 
 			if err != nil {
 				h.log.Println("post request to", r.Destination, "failed.")
@@ -144,10 +152,39 @@ func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.Respon
 		w.WriteHeader(http.StatusOK)
 		_, err = w.Write([]byte(strings.Join(echoStrings[:], "\n")))
 
+
 		if err != nil {
 			h.log.Println("Unable to echo reply.")
 		}
 	} else {
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+
+func (h *HookEngine) addHeaders(header *http.Header, headers map[string]string, dataBag *map[string]interface{})  {
+
+	for k, v := range headers {
+		tmpl, err := template.New("tmpl").Parse(v)
+
+		if err != nil {
+			h.log.Println("Unable to create template for header: ", k)
+			continue
+		}
+
+		value := ""
+		strBuffer := bytes.NewBufferString(value)
+		err = tmpl.Execute(strBuffer, &dataBag)
+
+		if err != nil {
+			h.log.Println("Unable to render template for header: ", k)
+			continue
+		}
+
+		// TODO: Test top ensure headers are added.
+		h.log.Println("headers: ", k, v)
+
+		header.Add(k, value)
+
 	}
 }

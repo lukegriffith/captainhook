@@ -38,6 +38,9 @@ endpoints:
     secrets:
       - ynabToken
       - budgetID
+    headers:
+      token: "{{ ._secrets.ynabToken }}"
+      nonSecretToken: 12345
     sources:
       - type: generic
         arguments:
