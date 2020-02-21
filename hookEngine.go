@@ -47,7 +47,6 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	}
 	h.log.Println("processing webhook:", name)
 
-
 	// Get endpoint by identifier.
 	endpoint, err := h.endpointSvc.Endpoint(name)
 
@@ -56,7 +55,6 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
 
 	// Read body and create data bag string map
 	b, err := ioutil.ReadAll(r.Body)
@@ -95,11 +93,12 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 
 	// Store secrets on data bag.
 	dataBag["_secrets"] = secretMap
+
 	h.executeEndpoint(endpoint, r, w, &dataBag)
 }
 
 // Executes endpoint rules, returns data to caller on rules specified with echo.
-func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.ResponseWriter,  dataBag *map[string]interface{})  {
+func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.ResponseWriter, dataBag *map[string]interface{}) {
 
 	var request bytes.Buffer
 	var echoStrings []string
@@ -123,22 +122,30 @@ func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.Respon
 		}
 		h.log.Println("rendered template: ", request.String())
 
-
 		if r.Destination != "" {
 
 			client := &http.Client{}
 
-			h.log.Println("forwarding to", r.Destination)
+			dest := h.templateString(r.Destination, dataBag)
 
-			req, err := http.NewRequest("POST", r.Destination, &request)
+			h.log.Println("forwarding to", dest)
 
-			h.addHeaders(&req.Header, r.Headers, dataBag)
+			req, err := http.NewRequest("POST", dest, &request)
 
-			client.Do(req)
+			for k, v := range r.Headers {
+				value := h.templateString(v, dataBag)
+				req.Header.Add(k, value)
+			}
+
+			resp, err := client.Do(req)
 
 			if err != nil {
 				h.log.Println("post request to", r.Destination, "failed.")
 			}
+
+			h.log.Println(*dataBag)
+
+			h.log.Println(resp)
 		}
 
 		if r.Echo {
@@ -152,7 +159,6 @@ func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.Respon
 		w.WriteHeader(http.StatusOK)
 		_, err = w.Write([]byte(strings.Join(echoStrings[:], "\n")))
 
-
 		if err != nil {
 			h.log.Println("Unable to echo reply.")
 		}
@@ -161,30 +167,18 @@ func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.Respon
 	}
 }
 
+func (h *HookEngine) templateString(templ string, data *map[string]interface{}) string {
 
-func (h *HookEngine) addHeaders(header *http.Header, headers map[string]string, dataBag *map[string]interface{})  {
+	tmpl, err := template.New("tmpl").Parse(templ)
 
-	for k, v := range headers {
-		tmpl, err := template.New("tmpl").Parse(v)
-
-		if err != nil {
-			h.log.Println("Unable to create template for header: ", k)
-			continue
-		}
-
-		value := ""
-		strBuffer := bytes.NewBufferString(value)
-		err = tmpl.Execute(strBuffer, &dataBag)
-
-		if err != nil {
-			h.log.Println("Unable to render template for header: ", k)
-			continue
-		}
-
-		// TODO: Test top ensure headers are added.
-		h.log.Println("headers: ", k, v)
-
-		header.Add(k, value)
-
+	if err != nil {
+		h.log.Println("Unable to create template for header from: ", templ)
+		return ""
 	}
+
+	buf := make([]byte, 0, 1)
+	var tpl *bytes.Buffer = bytes.NewBuffer(buf)
+	err = tmpl.Execute(tpl, &data)
+	return tpl.String()
+
 }

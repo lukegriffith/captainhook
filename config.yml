@@ -38,9 +38,7 @@ endpoints:
     secrets:
       - ynabToken
       - budgetID
-    headers:
-      token: "{{ ._secrets.ynabToken }}"
-      nonSecretToken: 12345
+
     sources:
       - type: generic
         arguments:
@@ -49,6 +47,9 @@ endpoints:
       - type: display
         #destination: https://api.youneedabudget.com/v1/budgets/<ID>/transactions
         echo: yes
+        headers:
+          token: "{{ ._secrets.ynabToken }}"
+          nonSecretToken: 12345
         arguments:
           template: |
             {
