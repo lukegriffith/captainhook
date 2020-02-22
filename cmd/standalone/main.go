@@ -19,8 +19,8 @@ func main() {
 	var configPath, secretPath, passphrase string
 
 	flag.StringVar(&configPath, "configPath", "config.yml", "YAML file to configure the service with endpoints.")
-	flag.StringVar (&secretPath, "secretPath", "", "Encrypted YAML blob containing string map of secrets.")
-	flag.StringVar (&passphrase, "passphrase", "", "Passphrase for encrypted YAML blob.")
+	flag.StringVar(&secretPath, "secretPath", "", "Encrypted YAML blob containing string map of secrets.")
+	flag.StringVar(&passphrase, "passphrase", "", "Passphrase for encrypted YAML blob.")
 	flag.Parse()
 
 	var secEnd captainhook.SecretEngine = createSecretsEngine(secretPath, passphrase)

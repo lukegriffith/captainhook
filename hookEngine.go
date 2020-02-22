@@ -2,89 +2,29 @@ package captainhook
 
 import (
 	"bytes"
-	"encoding/json"
+	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
-	"strings"
 	"text/template"
 )
-
-// Structure is responsible to processing incoming requests against configured endpoints.
-type HookEngine struct {
-	log         *log.Logger
-	endpointSvc EndpointService
-	secretEng   SecretEngine
-}
-
-// Constructor requires endpoint and secret engine.
-func NewHookEngine(log *log.Logger, ec EndpointService, sec SecretEngine) *HookEngine {
-	return &HookEngine{log, ec, sec}
-}
 
 // Main routine that processes received hooks, obtaining endpoints and processing rules.
 // Various error checking and validation happens at this stage, i.e mapping required secrets to
 // dataBag. data bag is a map of input parameters passed to each rules function.
-func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
+func Hook(w http.ResponseWriter, r *http.Request, endpoint *Endpoint, secrets SecretEngine, log *log.Logger, dataBag *map[string]interface{}) {
 
-	var dataBag = make(map[string]interface{})
+	var bag = *dataBag
+
 	var secretMap = make(map[string]string)
-	var endpoint *Endpoint
-	var name string
-	var ok bool
-
-	// Extract variables from request.
-	vars := mux.Vars(r)
-
-	// Validate ID is provided.
-	if name, ok = vars["id"]; !ok {
-		w.WriteHeader(http.StatusNotFound)
-		h.log.Println("no id provided.")
-		return
-	}
-	h.log.Println("processing webhook:", name)
-
-	// Get endpoint by identifier.
-	endpoint, err := h.endpointSvc.Endpoint(name)
-
-	if err != nil {
-		h.log.Println("error getting endpoint", name)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	// Read body and create data bag string map
-	b, err := ioutil.ReadAll(r.Body)
-
-	if err != nil {
-		h.log.Println("unable to get body from request")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	body := fmt.Sprintf("%s", b)
-	decodedBody, err := url.QueryUnescape(body)
-
-	if err != nil {
-		h.log.Fatal("unable to URL decode body")
-	}
-
-	err = json.Unmarshal([]byte(decodedBody), &dataBag)
-
-	if err != nil {
-		h.log.Println("unable to unmarshal json")
-	}
 
 	// Attach secrets to secrets map/
 	for _, secret := range endpoint.Secrets {
-		v, err := h.secretEng.GetTextSecret(secret)
+		v, err := secrets.GetTextSecret(secret)
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			h.log.Println("unable to get secret from engine", secret)
+			log.Println("unable to get secret from engine", secret)
 			return
 		}
 
@@ -92,94 +32,83 @@ func (h *HookEngine) Hook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Store secrets on data bag.
-	dataBag["_secrets"] = secretMap
+	bag["_secrets"] = secretMap
 
-	h.executeEndpoint(endpoint, r, w, &dataBag)
-}
-
-// Executes endpoint rules, returns data to caller on rules specified with echo.
-func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.ResponseWriter, dataBag *map[string]interface{}) {
 
 	var request bytes.Buffer
-	var echoStrings []string
-
-	rules, err := e.GetRules()
+	rules, err := endpoint.GetRules()
 
 	if err != nil {
-		h.log.Println("unable to enumerate rules, endpoint", e.Name)
+		log.Println("unable to enumerate rules, endpoint", endpoint.Name)
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	for _, r := range rules {
 
+		// For each rule, assign related function then execute via the interface method execute passing in
+		// dataBag and the http request.
 		AssignFunction(&r)
-
 		err = r.Execute(&request, *dataBag)
-
 		if err != nil {
-			h.log.Println(r, "failed to execute template.", err)
+			log.Println(r, "failed to execute template.", err)
 			continue
 		}
-
+		// For rules with destinations specified, move to forward function result.
 		if r.Destination != "" {
-
+			// Template url and create http request.
 			client := &http.Client{}
-
-			dest := h.templateString(r.Destination, dataBag)
-
-			h.log.Println("forwarding to", dest)
-
-			req, err := http.NewRequest("POST", dest, &request)
-
-			for k, v := range r.Headers {
-				value := h.templateString(v, dataBag)
-				req.Header.Add(k, value)
-			}
-
-			resp, err := client.Do(req)
+			dest, err := templateString(r.Destination, dataBag)
 
 			if err != nil {
-				h.log.Println("post request to", r.Destination, "failed.")
+				log.Println(err)
+				continue
+			}
+			log.Println("forwarding to", dest)
+			req, err := http.NewRequest("POST", dest, &request)
+			if err != nil {
+				log.Println("Failed to create new request", err)
+				continue
+			}
+			// Render headers and attach to request
+			for k, v := range r.Headers {
+				value, err := templateString(v, dataBag)
+				if err != nil {
+					log.Println(err)
+					continue
+				}
+				req.Header.Add(k, value)
+			}
+			// POST request
+			resp, err := client.Do(req)
+			if err != nil {
+				log.Println("post request to", r.Destination, "failed.")
+				continue
 			}
 
 			if resp.StatusCode > 299 || resp.StatusCode < 200 {
-				h.log.Println("Request returned non 200 status code:", resp.StatusCode)
-				h.log.Println("HTTP Status:", resp.Status)
+				log.Println("Request returned non 200 status code:", resp.StatusCode)
+				log.Println("HTTP Status:", resp.Status)
 			}
 
 		}
 
-		if r.Echo {
-			echoStrings = append(echoStrings, request.String())
-		}
 		request.Reset()
-	}
-
-	// Reply with rules that have been echoed
-	if len(echoStrings) > 0 {
-		w.WriteHeader(http.StatusOK)
-		_, err = w.Write([]byte(strings.Join(echoStrings[:], "\n")))
-
-		if err != nil {
-			h.log.Println("Unable to echo reply.")
-		}
-	} else {
-		w.WriteHeader(http.StatusNoContent)
 	}
 }
 
-func (h *HookEngine) templateString(templ string, data *map[string]interface{}) string {
+
+// Helper function to quickly render a string template and return the value.
+// Useful for URI and Header rendering.
+func templateString(templ string, data *map[string]interface{}) (string, error) {
 
 	tmpl, err := template.New("tmpl").Parse(templ)
-
 	if err != nil {
-		h.log.Println("Unable to create template for header from: ", templ)
-		return ""
+		return "", errors.New(fmt.Sprint("Unable to create template for header from: ", templ))
 	}
 
 	buf := make([]byte, 0, 1)
 	var tpl *bytes.Buffer = bytes.NewBuffer(buf)
 	err = tmpl.Execute(tpl, &data)
-	return tpl.String()
-
+	return tpl.String(), nil
 }

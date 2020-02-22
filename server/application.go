@@ -13,23 +13,17 @@ func New(endpoints captainhook.EndpointService, secrets captainhook.SecretEngine
 
 	log := util.NewLog("CaptainHook ")
 	mux := mux.NewRouter()
-	fs := http.FileServer(http.Dir("static"))
+	log.Println("Starting Application Server.")
 	AppServer := &AppServer{mux, log}
 
-	hookEng := captainhook.NewHookEngine(log, endpoints, secrets)
+	webhookController := NewRestController(NewWebhookController(endpoints, secrets))
+	mux.HandleFunc("/webhook/{id}", webhookController.ServeHTTP)
 
-	log.Println("Starting Application Server.")
-
-	mux.Handle("/", fs)
-	mux.HandleFunc("/webhook/{id}", hookEng.Hook)
-
-	ec := RestController{log, NewEndpointController(endpoints)}
-
-	mux.HandleFunc("/endpoint", ec.ServeHTTP)
-	mux.HandleFunc("/endpoint/{name}", ec.ServeHTTP)
+	endpointController := NewRestController(NewEndpointController(endpoints))
+	mux.HandleFunc("/endpoint", endpointController.ServeHTTP)
+	mux.HandleFunc("/endpoint/{name}", endpointController.ServeHTTP)
 
 	return AppServer
-
 }
 
 //TODO: Document

@@ -59,8 +59,6 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		e.log.Print(obj)
-
 		json, err := json.Marshal(obj)
 		if err != nil {
 			e.log.Print("Unable to marshal endpoints to json.")
@@ -74,6 +72,12 @@ func (e *EndpointController) Get(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (e *EndpointController) Post(w http.ResponseWriter, r *http.Request)   {}
-func (e *EndpointController) Patch(w http.ResponseWriter, r *http.Request)  {}
-func (e *EndpointController) Delete(w http.ResponseWriter, r *http.Request) {}
+func (e *EndpointController) Post(w http.ResponseWriter, r *http.Request)   {
+	w.WriteHeader(http.StatusMethodNotAllowed)
+}
+func (e *EndpointController) Patch(w http.ResponseWriter, r *http.Request)  {
+	w.WriteHeader(http.StatusMethodNotAllowed)
+}
+func (e *EndpointController) Delete(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusMethodNotAllowed)
+}

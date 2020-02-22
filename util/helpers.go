@@ -11,3 +11,5 @@ func NewLog(name string) *log.Logger {
 	l.SetOutput(os.Stdout)
 	return l
 }
+
+

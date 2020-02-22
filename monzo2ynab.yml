@@ -20,7 +20,7 @@ endpoints:
               "transaction": {
                 "account_id": "{{ index ._secrets "accountId" }}",
                 "date": "{{ .data.created }}",
-                "amount": "{{ multiply .data.amount 10 }}",
+                "amount": "{{ mul .data.amount 10 }}",
                 "memo": "{{ .data.category }} : {{ .data.description }}",
                 {{if .data.merchant}}
                 "payee_name": "{{ .data.merchant.name }}"
