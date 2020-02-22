@@ -120,7 +120,6 @@ func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.Respon
 			h.log.Println(r, "failed to execute template.", err)
 			continue
 		}
-		h.log.Println("rendered template: ", request.String())
 
 		if r.Destination != "" {
 
@@ -143,9 +142,11 @@ func (h *HookEngine) executeEndpoint(e *Endpoint, r *http.Request, w http.Respon
 				h.log.Println("post request to", r.Destination, "failed.")
 			}
 
-			h.log.Println(*dataBag)
+			if resp.StatusCode > 299 || resp.StatusCode < 200 {
+				h.log.Println("Request returned non 200 status code:", resp.StatusCode)
+				h.log.Println("HTTP Status:", resp.Status)
+			}
 
-			h.log.Println(resp)
 		}
 
 		if r.Echo {

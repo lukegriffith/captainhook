@@ -125,7 +125,5 @@ func DisplayFunc(iw io.Writer, dataMap map[string]interface{}, rule *Rule) error
 	}
 	displayLog := util.NewLog(rule.Type)
 	displayLog.Println(iw)
-
 	return nil
-
 }
