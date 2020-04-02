@@ -34,7 +34,6 @@ func Hook(w http.ResponseWriter, r *http.Request, endpoint *Endpoint, secrets Se
 	// Store secrets on data bag.
 	bag["_secrets"] = secretMap
 
-
 	var request bytes.Buffer
 	rules, err := endpoint.GetRules()
 
@@ -96,7 +95,6 @@ func Hook(w http.ResponseWriter, r *http.Request, endpoint *Endpoint, secrets Se
 		request.Reset()
 	}
 }
-
 
 // Helper function to quickly render a string template and return the value.
 // Useful for URI and Header rendering.

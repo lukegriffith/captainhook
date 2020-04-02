@@ -10,7 +10,6 @@ type (
 		Name    string   `yaml:"name"`
 		Secrets []string `yaml:"secrets"`
 		Rules   []Rule   `yaml:"rules"`
-		Sources []Source `yaml:"sources"`
 	}
 
 	// Interface provides an extensible way of implementing the EndpointService,
@@ -21,12 +20,6 @@ type (
 		Endpoints() ([]Endpoint, error)
 		CreateEndpoint() error
 		DeleteEndpoint() error
-	}
-
-	// Contains information on the type of source expected in an endpoint.
-	Source struct {
-		Type      string            `yaml:"type"`
-		Arguments map[string]string `yaml:"arguments"`
 	}
 
 	SecretEngine interface {
@@ -42,13 +35,4 @@ func (e *Endpoint) GetRules() ([]Rule, error) {
 		return nil, errors.New("Endpoint has no associated rules.")
 	}
 	return e.Rules, nil
-}
-
-// Obtains the associated sources for an endpoint.
-func (e *Endpoint) GetSources() ([]Source, error) {
-
-	if e.Sources == nil {
-		return nil, errors.New("Endpoint has no associated sources.")
-	}
-	return e.Sources, nil
 }

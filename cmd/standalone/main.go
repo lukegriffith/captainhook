@@ -31,21 +31,15 @@ func main() {
 		panic(err)
 	}
 
-
 	endpoints, err := svc.Endpoints()
 
 	if err != nil {
 		panic(err)
 	}
 
-	if secEnd != nil {
-		err := secEnd.ValidateEndpointConfig(endpoints)
-
-		if err != nil {
-			panic(err.Error())
-		}
-	}
-
+	// Validate that any parsed endpoint that uses secrets,
+	// is referencing a secret that exists in the secrets database.
+	validateConfig(endpoints, secEnd)
 
 	app := server.New(svc, secEnd)
 
@@ -84,3 +78,16 @@ func createSecretsEngine(secretPath string, passphrase string) captainhook.Secre
 		return nil
 	}
 }
+
+
+
+func validateConfig(endpoints []captainhook.Endpoint, secEnd captainhook.SecretEngine) {
+	if secEnd != nil {
+		err := secEnd.ValidateEndpointConfig(endpoints)
+
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+}
+

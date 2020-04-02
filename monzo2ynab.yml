@@ -4,10 +4,6 @@ endpoints:
       - ynabApiToken
       - budgetId
       - accountId
-    sources:
-      - type: generic
-        arguments:
-          token: hookToken
     rules:
       - type: template
         destination: https://api.youneedabudget.com/v1/budgets/{{index ._secrets "budgetId"}}/transactions
