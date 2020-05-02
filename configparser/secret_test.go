@@ -114,8 +114,8 @@ func TestValidation(t *testing.T) {
 
 	secEnd := &SecretsEndpoint{secrets}
 
-	validEndpoint := captainhook.Endpoint{"TestEnd", []string{"testKey"}, nil, nil}
-	invalidEndpoint := captainhook.Endpoint{"TestEnd", []string{"testKey", "fakeKey"}, nil, nil}
+	validEndpoint := captainhook.Endpoint{"TestEnd", []string{"testKey"}, nil}
+	invalidEndpoint := captainhook.Endpoint{"TestEnd", []string{"testKey", "fakeKey"}, nil}
 
 	var endpoints []captainhook.Endpoint
 
