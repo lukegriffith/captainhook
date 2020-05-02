@@ -9,7 +9,6 @@ func TestEndpoint(t *testing.T) {
 
 	var (
 		r []Rule
-		s []Source
 		e Endpoint
 	)
 
@@ -17,11 +16,10 @@ func TestEndpoint(t *testing.T) {
 	args["template"] = "{{.test}}"
 
 	r = append(r, Rule{"template", "testURL", args, nil, args, false, TemplateFunc})
-	s = append(s, Source{"Github", args})
 
 	secrets := []string{"test", "test1"}
 
-	e = Endpoint{"Test", secrets, r, s}
+	e = Endpoint{"Test", secrets, r}
 
 	rul, err := e.GetRules()
 	if err != nil {
