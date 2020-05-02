@@ -16,16 +16,17 @@ import (
 
 func main() {
 
-	var configPath, secretPath, passphrase string
+	var configPath, secretPath, passphrase, port string
 
 	flag.StringVar(&configPath, "configPath", "config.yml", "YAML file to configure the service with endpoints.")
 	flag.StringVar(&secretPath, "secretPath", "", "Encrypted YAML blob containing string map of secrets.")
 	flag.StringVar(&passphrase, "passphrase", "", "Passphrase for encrypted YAML blob.")
+	flag.StringVar(&port, "port", ":8081", "TCP port for server to run, default is ':8081'")
 	flag.Parse()
 
 	var secEnd captainhook.SecretEngine = createSecretsEngine(secretPath, passphrase)
 
-	svc, err := configparser.NewConfig(configPath)
+	svc, config, err := configparser.NewConfig(configPath)
 
 	if err != nil {
 		panic(err)
@@ -44,25 +45,38 @@ func main() {
 	app := server.New(svc, secEnd)
 
 	hookserver := &http.Server{
-		Addr:    ":8081",
+		Addr:    port,
 		Handler: app,
 	}
 
 	go hookserver.ListenAndServe()
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+	signal_channel := make(chan os.Signal, 1)
+	signal.Notify(signal_channel, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
-	_ = <-c
-	log.Print("os signal received processing.")
+	exit_channel := make(chan int)
+	go func() {
+		for {
+			s := <-signal_channel
+			log.Print("os signal received processing.")
+			switch s {
+			case syscall.SIGINT:
+				config.Reload()
+			case syscall.SIGTERM:
+				err = hookserver.Shutdown(context.Background())
 
-	log.Print("shutting server down gracefully.")
-	err = hookserver.Shutdown(context.Background())
+				if err != nil {
+					log.Println(err)
+					exit_channel <- 1
+				} else {
+					exit_channel <- 0
+				}
+			}
+		}
+	}()
 
-	if err != nil {
-		panic(err)
-	}
-
+	code := <-exit_channel
+	os.Exit(code)
 }
 
 func createSecretsEngine(secretPath string, passphrase string) captainhook.SecretEngine {

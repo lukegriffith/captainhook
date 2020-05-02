@@ -77,7 +77,7 @@ func loadConfig(data []byte) (*Config, error) {
 
 
 // Constructor.
-func NewConfig(path string) (*EndpointService, error) {
+func NewConfig(path string) (*EndpointService, *Config, error) {
 
 	e := make([]captainhook.Endpoint, 1)
 
@@ -86,8 +86,8 @@ func NewConfig(path string) (*EndpointService, error) {
 	err := c.Reload()
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return &EndpointService{c}, nil
+	return &EndpointService{c}, c, nil
 }
