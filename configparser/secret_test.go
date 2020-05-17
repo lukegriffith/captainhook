@@ -16,7 +16,7 @@ testKey: 123
 )
 func TestEncryptionDecryption(t *testing.T) {
 
-	k := NewAsymmetricKey(passphrase)
+	k := NewSymmetricKey(passphrase)
 	plaintext := []byte("This is a test string")
 	ciphertext := k.Encrypt(plaintext)
 
@@ -32,7 +32,7 @@ func TestEncryptionDecryption(t *testing.T) {
 func TestSecretsMap(t *testing.T) {
 
 
-	k := NewAsymmetricKey(passphrase)
+	k := NewSymmetricKey(passphrase)
 	plaindata := []byte(testData)
 	ciphertext := k.Encrypt(plaindata)
 
@@ -66,7 +66,7 @@ func TestLoadFromFile(t *testing.T) {
 
 	fpath := file.Name()
 
-	k := NewAsymmetricKey(passphrase)
+	k := NewSymmetricKey(passphrase)
 	plaindata := []byte(testData)
 	ciphertext := k.Encrypt(plaindata)
 
@@ -101,7 +101,7 @@ func TestLoadFromFile(t *testing.T) {
 func TestValidation(t *testing.T) {
 
 
-	k := NewAsymmetricKey(passphrase)
+	k := NewSymmetricKey(passphrase)
 	plaindata := []byte(testData)
 	ciphertext := k.Encrypt(plaindata)
 

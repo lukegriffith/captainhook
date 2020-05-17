@@ -47,7 +47,7 @@ func NewSecretEngine(path string, secret string) (*SecretsEndpoint, error) {
 // creates secrets structure from byte array.
 func loadSecrets(cipherText []byte, passphrase string) (map[string]string, error) {
 
-	k := NewAsymmetricKey(passphrase)
+	k := NewSymmetricKey(passphrase)
 	data := k.Decrypt(cipherText)
 	s := make(map[string]string)
 	err := yaml.Unmarshal(data, &s)
@@ -98,20 +98,20 @@ func (s *SecretsEndpoint) ValidateEndpointConfig(endpoints []captainhook.Endpoin
 }
 
 // Struct contains hashed key for encryption / decryption
-type AsymmetricKey struct {
+type SymmetricKey struct {
 	key string
 }
 
-// NewAsymmetricKey creates an object to deal with aes encryption from provided passphrase
-func NewAsymmetricKey(key string) *AsymmetricKey {
+// NewSymmetricKey creates an object to deal with aes encryption from provided passphrase
+func NewSymmetricKey(key string) *SymmetricKey {
 	hasher := md5.New()
 	hasher.Write([]byte(key))
 
-	return &AsymmetricKey{hex.EncodeToString(hasher.Sum(nil))}
+	return &SymmetricKey{hex.EncodeToString(hasher.Sum(nil))}
 }
 
 // Decrypts provided data using key.
-func (k *AsymmetricKey) Decrypt(data []byte) []byte {
+func (k *SymmetricKey) Decrypt(data []byte) []byte {
 
 	block, err := aes.NewCipher([]byte(k.key))
 	if err != nil {
@@ -135,7 +135,7 @@ func (k *AsymmetricKey) Decrypt(data []byte) []byte {
 }
 
 // Encrypts provided data using key.
-func (k *AsymmetricKey) Encrypt(data []byte) []byte {
+func (k *SymmetricKey) Encrypt(data []byte) []byte {
 	block, _ := aes.NewCipher([]byte(k.key))
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {

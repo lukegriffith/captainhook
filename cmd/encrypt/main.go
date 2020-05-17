@@ -25,7 +25,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	key := configparser.NewAsymmetricKey(passphrase)
+	key := configparser.NewSymmetricKey(passphrase)
 
 	file, err := os.Open(filepath)
 
