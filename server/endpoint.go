@@ -5,19 +5,18 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lukemgriffith/captainhook"
 	"github.com/lukemgriffith/captainhook/util"
-	"log"
 	"net/http"
 )
 
 //TODO: Document
 type EndpointController struct {
 	service captainhook.EndpointService
-	log     *log.Logger
+	log     *util.Logger
 }
 
 //TODO: Document
 func NewEndpointController(es captainhook.EndpointService) *EndpointController {
-	log := util.NewLog("EndpointController ")
+	log := util.NewDebugLog("EndpointController ")
 	return &EndpointController{es, log}
 }
 

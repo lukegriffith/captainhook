@@ -2,7 +2,6 @@
 
 import (
 	"github.com/lukemgriffith/captainhook/util"
-	"log"
 	"net/http"
 )
 
@@ -18,7 +17,7 @@ type Controller interface {
 
 //TODO: Holds a controller and logging structure, is mainly a way to get around go's lack of generics.
 type RestController struct {
-	log        *log.Logger
+	log        *util.Logger
 	controller Controller
 }
 

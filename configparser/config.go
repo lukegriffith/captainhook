@@ -3,8 +3,8 @@ package configparser
 import (
 	"errors"
 	"github.com/lukemgriffith/captainhook"
+	"github.com/lukemgriffith/captainhook/util"
 	"gopkg.in/yaml.v2"
-	"log"
 )
 
 // Structure contains the whole configuration when using the config parser
@@ -12,6 +12,7 @@ import (
 type Config struct {
 	Endpoints []captainhook.Endpoint `json:"Endpoints"`
 	path      string
+  log       *util.Logger
 }
 
 // Returns the endpoints of the configuration.
@@ -21,7 +22,7 @@ func (c *Config) GetEndpoints() []captainhook.Endpoint {
 
 // Public method to reloads configuration from disk via specified path.
 func (c *Config) Reload() error {
-	log.Println("loading", c.path)
+	c.log.Println("loading", c.path)
 	b, err := load(c.path)
 
 	if err != nil {
@@ -50,7 +51,7 @@ func (c *Config) Dump() error {
 		return errors.New("unable to render YAML config from config structure")
 	}
 
-	log.Println(string(d))
+	c.log.Println(string(d))
 
 	return nil
 }
@@ -63,10 +64,10 @@ func (c *Config) setEndpoint(e []captainhook.Endpoint) {
 // Loads configuration from a byte array performing validation.
 func loadConfig(data []byte) (*Config, error) {
 
-	c := Config{nil, ""}
+	c := Config{nil, "", nil}
 	err := yaml.Unmarshal(data, &c)
 
-	log.Println(string(data))
+	c.log.Println(string(data))
 
 	if err != nil {
 		return nil, err
@@ -81,7 +82,7 @@ func NewConfig(path string) (*EndpointService, *Config, error) {
 
 	e := make([]captainhook.Endpoint, 1)
 
-	c := &Config{e, path}
+	c := &Config{e, path, util.NewDebugLog("config")}
 
 	err := c.Reload()
 

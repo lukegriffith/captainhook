@@ -4,7 +4,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/lukemgriffith/captainhook"
 	"github.com/lukemgriffith/captainhook/util"
-	"log"
 	"net/http"
 )
 
@@ -29,7 +28,7 @@ func New(endpoints captainhook.EndpointService, secrets captainhook.SecretEngine
 //TODO: Document
 type AppServer struct {
 	mux *mux.Router
-	log *log.Logger
+	log *util.Logger
 }
 
 //TODO: Document

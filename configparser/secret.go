@@ -11,8 +11,6 @@ import (
 	"fmt"
 	"github.com/lukemgriffith/captainhook"
 	"io"
-	"log"
-
 	"gopkg.in/yaml.v2"
 )
 
@@ -51,8 +49,6 @@ func loadSecrets(cipherText []byte, passphrase string) (map[string]string, error
 	data := k.Decrypt(cipherText)
 	s := make(map[string]string)
 	err := yaml.Unmarshal(data, &s)
-
-	log.Println(string(data))
 
 	if err != nil {
 		return nil, errors.New("unable to load secrets from path provided")

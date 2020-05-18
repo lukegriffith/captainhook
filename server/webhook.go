@@ -7,7 +7,6 @@ import (
 	"github.com/lukemgriffith/captainhook"
 	"github.com/lukemgriffith/captainhook/util"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -15,7 +14,7 @@ import (
 type WebhookController struct {
 	endpoints captainhook.EndpointService
 	secrets captainhook.SecretEngine
-	log *log.Logger
+	log *util.Logger
 }
 
 

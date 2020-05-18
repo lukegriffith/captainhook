@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/lukemgriffith/captainhook"
+	"github.com/lukemgriffith/captainhook/util"
 	"github.com/lukemgriffith/captainhook/configparser"
 	"github.com/lukemgriffith/captainhook/server"
 	"io/ioutil"
@@ -19,7 +20,7 @@ import (
 func main() {
 
 	var configPath, secretPath, passphrase, port, cryptoFilePath string
-	var decrypt bool
+	var decrypt, debug bool
 
 	serveSet := flag.NewFlagSet("serve", flag.ExitOnError)
 	cryptoSet := flag.NewFlagSet("encrypt", flag.ExitOnError)
@@ -28,10 +29,12 @@ func main() {
 	serveSet.StringVar(&secretPath, "secretPath", "", "Encrypted YAML blob containing string map of secrets.")
 	serveSet.StringVar(&passphrase, "passphrase", "", "Passphrase for encrypted YAML blob.")
 	serveSet.StringVar(&port, "port", ":8081", "TCP port for server to run, default is ':8081'")
+  serveSet.BoolVar(&debug, "debug", false, "Should debug messages be printed")
 
 	cryptoSet.StringVar(&cryptoFilePath, "filepath", "","File to perform encryption operation.")
 	cryptoSet.StringVar(&passphrase, "passphrase", "", "Passphrase for encrypted YAML blob.")
 	cryptoSet.BoolVar(&decrypt, "decrypt", false, "should the file be decrypted")
+  cryptoSet.BoolVar(&debug, "debug", false, "Should debug messages be printed")
 
 
 	if len(os.Args) < 2 {
@@ -64,10 +67,12 @@ func main() {
 	}
 
 	if serveSet.Parsed() {
+    util.SetDebug(debug)
 		startServer(configPath, secretPath, passphrase, port)
 	}
 
 	if cryptoSet.Parsed() {
+    util.SetDebug(debug)
 		encryptionCommand(passphrase, cryptoFilePath, decrypt)
 	}
 }

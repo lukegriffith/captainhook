@@ -4,15 +4,15 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"text/template"
+  "github.com/lukemgriffith/captainhook/util"
 )
 
 // Main routine that processes received hooks, obtaining endpoints and processing rules.
 // Various error checking and validation happens at this stage, i.e mapping required secrets to
 // dataBag. data bag is a map of input parameters passed to each rules function.
-func Hook(w http.ResponseWriter, r *http.Request, endpoint *Endpoint, secrets SecretEngine, log *log.Logger, dataBag *map[string]interface{}) {
+func Hook(w http.ResponseWriter, r *http.Request, endpoint *Endpoint, secrets SecretEngine, log *util.Logger, dataBag *map[string]interface{}) {
 
 	var bag = *dataBag
 
