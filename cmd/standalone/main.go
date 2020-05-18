@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/lukemgriffith/captainhook"
 	"github.com/lukemgriffith/captainhook/configparser"
 	"github.com/lukemgriffith/captainhook/server"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -16,13 +18,98 @@ import (
 
 func main() {
 
-	var configPath, secretPath, passphrase, port string
+	var configPath, secretPath, passphrase, port, cryptoFilePath string
+	var decrypt bool
 
-	flag.StringVar(&configPath, "configPath", "config.yml", "YAML file to configure the service with endpoints.")
-	flag.StringVar(&secretPath, "secretPath", "", "Encrypted YAML blob containing string map of secrets.")
-	flag.StringVar(&passphrase, "passphrase", "", "Passphrase for encrypted YAML blob.")
-	flag.StringVar(&port, "port", ":8081", "TCP port for server to run, default is ':8081'")
-	flag.Parse()
+	serveSet := flag.NewFlagSet("serve", flag.ExitOnError)
+	cryptoSet := flag.NewFlagSet("encrypt", flag.ExitOnError)
+
+	serveSet.StringVar(&configPath, "configPath", "config.yml", "YAML file to configure the service with endpoints.")
+	serveSet.StringVar(&secretPath, "secretPath", "", "Encrypted YAML blob containing string map of secrets.")
+	serveSet.StringVar(&passphrase, "passphrase", "", "Passphrase for encrypted YAML blob.")
+	serveSet.StringVar(&port, "port", ":8081", "TCP port for server to run, default is ':8081'")
+
+	cryptoSet.StringVar(&cryptoFilePath, "filepath", "","File to perform encryption operation.")
+	cryptoSet.StringVar(&passphrase, "passphrase", "", "Passphrase for encrypted YAML blob.")
+	cryptoSet.BoolVar(&decrypt, "decrypt", false, "should the file be decrypted")
+
+
+	if len(os.Args) < 2 {
+		fmt.Println("CaptainHook: AWK in the cloud.")
+		fmt.Println()
+		fmt.Println("serve, encrypt or help subcommand is required.")
+		os.Exit(1)
+	}
+
+	switch os.Args[1] {
+	case "serve":
+		serveSet.Parse(os.Args[2:])
+	case "encrypt":
+		cryptoSet.Parse(os.Args[2:])
+	case "help":
+		fmt.Println("serve: Start the CaptainHook application server.")
+		serveSet.PrintDefaults()
+		fmt.Println()
+		fmt.Println("encrypt: Perform encryption operations on a yaml file.")
+		cryptoSet.PrintDefaults()
+		os.Exit(1)
+	default:
+		fmt.Println("Invalid subcommand")
+		os.Exit(1)
+	}
+
+	if serveSet.Parsed() {
+		startServer(configPath, secretPath, passphrase, port)
+	}
+
+	if cryptoSet.Parsed() {
+		encryptionCommand(passphrase, cryptoFilePath, decrypt)
+	}
+}
+
+func encryptionCommand(passphrase string, filepath string, decrypt bool) {
+
+	if passphrase == "" || filepath == "" {
+		flag.Usage()
+		os.Exit(0)
+	}
+
+	key := configparser.NewSymmetricKey(passphrase)
+
+	file, err := os.Open(filepath)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	data, err := ioutil.ReadAll(file)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if decrypt {
+		text := key.Decrypt(data)
+
+		err = ioutil.WriteFile(filepath, text, 0777)
+
+		if err != nil {
+			panic(err.Error())
+		}
+
+	} else {
+		ciphertext := key.Encrypt(data)
+
+		err = ioutil.WriteFile(filepath, ciphertext, 0777)
+
+		if err != nil {
+			panic(err.Error())
+		}
+	}
+
+}
+
+func startServer(configPath string, secretPath string, passphrase string, port string) {
 
 	var secEnd captainhook.SecretEngine = createSecretsEngine(secretPath, passphrase)
 
@@ -78,6 +165,9 @@ func main() {
 	code := <-exit_channel
 	os.Exit(code)
 }
+
+
+
 
 func createSecretsEngine(secretPath string, passphrase string) captainhook.SecretEngine {
 	if secretPath != "" && passphrase != "" {

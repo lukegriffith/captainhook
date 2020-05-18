@@ -10,13 +10,19 @@ import (
 
 func main() {
 
-	var passphrase string
-	var filepath string
+	var passphrase, filepath, cryptoFilePath string
 	var decrypt bool
 
-	flag.StringVar(&passphrase, "passphrase", "", "passphrase to encrypt data with")
-	flag.StringVar(&filepath, "filepath", "", "path to file to encrypt")
-	flag.BoolVar(&decrypt, "decrypt", false, "should the file be decrypted")
+	serveSet := flag.NewFlagSet("serve", flag.ExitOnError)
+	cryptoSet := flag.NewFlagSet("encrypt", flag.ExitOnError)
+
+	serveSet.StringVar(&passphrase, "passphrase", "", "passphrase to encrypt data with")
+	serveSet.StringVar(&filepath, "filepath", "", "path to file to encrypt")
+	serveSet.BoolVar(&decrypt, "decrypt", false, "should the file be decrypted")
+
+	cryptoSet.StringVar(&cryptoFilePath, "filepath", "","File to perform encryption operation.")
+
+
 
 	flag.Parse()
 
