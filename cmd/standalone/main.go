@@ -37,7 +37,12 @@ func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("CaptainHook: AWK in the cloud.")
 		fmt.Println()
-		fmt.Println("serve, encrypt or help subcommand is required.")
+		fmt.Println("captainhook [command] | captainhook [command] -h")
+		fmt.Println()
+		fmt.Println("Available Commands:")
+		fmt.Println("\tserve - Start the CaptainHook application server")
+		fmt.Println("\tencrypt - Perform encryption operations")
+		fmt.Println("\thelp - Print help for subcommands")
 		os.Exit(1)
 	}
 
