@@ -2,7 +2,6 @@
 
 Cloud based awk, transform and glue webhooks and api's together.
 
-
 ```bash
 .\captainhook help
 serve: Start the CaptainHook application server.
@@ -23,6 +22,14 @@ encrypt: Perform encryption operations on a yaml file.
   -passphrase string
         Passphrase for encrypted YAML blob.
 ```
+
+## Example run 
+
+```
+captainhook encrypt -filepath .\monzoSecrets.yaml -passphrase XXXXXXX
+captainhook serve -configPath .\monzo2ynab.yml -passphrase XXXXXXX -secretPath .\monzoSecrets.yaml
+```
+
 
 ## Docs
  
