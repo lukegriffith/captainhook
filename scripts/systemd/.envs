@@ -1,0 +1,3 @@
+SECRETS_FILE=/opt/captainhook/monzoSecrets.yaml
+CONFIG_FILE=/opt/captainhook/monzo2ynab.yml
+SECRETS_PASS=XXXX

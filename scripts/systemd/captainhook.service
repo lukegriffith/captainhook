@@ -1,0 +1,8 @@
+[Unit]
+Description=CaptainHook
+
+[Service]
+EnvironmentFile=-/opt/captainhook/.envs
+ExecStart=/opt/captainhook/captainhook serve -configPath $CONFIG_FILE -passphrase $SECRETS_PASS -secretPath $SECRETS_FILE -port ":8081"
+ExecStop=/bin/kill -SIGTERM $MAINPID
+ExecReload=/bin/kill -SIGINT $MAINPID
