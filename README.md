@@ -30,6 +30,9 @@ captainhook encrypt -filepath .\monzoSecrets.yaml -passphrase XXXXXXX
 captainhook serve -configPath .\monzo2ynab.yml -passphrase XXXXXXX -secretPath .\monzoSecrets.yaml
 ```
 
+## Compiling
+
+Go 1.13 is required to build the source code, simply run `go install cmd/standalone/captainhook.go` to install the binary to your gopath, then run the produced executable, located in `$GOPATH/bin/`
 
 ## Docs
  
