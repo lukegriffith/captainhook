@@ -1,5 +1,7 @@
 # CaptainHook
 
+![Go Test](https://github.com/cloudcaptainco/captainhook/workflows/Go%20Test/badge.svg)
+
 Cloud based awk, transform and glue webhooks and api's together.
 
 ```bash
