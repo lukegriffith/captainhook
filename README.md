@@ -1,6 +1,7 @@
 # CaptainHook
 
 ![Go Test](https://github.com/cloudcaptainco/captainhook/workflows/Go%20Test/badge.svg)
+![Go Build](https://github.com/cloudcaptainco/captainhook/workflows/Go%20Build/badge.svg)
 
 Cloud based awk, transform and glue webhooks and api's together.
 
